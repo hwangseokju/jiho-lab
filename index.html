@@ -4,849 +4,1496 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>지호박사 과학실험실</title>
-<meta name="theme-color" content="#0D1B2A">
+<meta name="theme-color" content="#0a0e1a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="지호박사">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap');
+:root {
+  --bg: #0a0e1a;
+  --bg2: #111827;
+  --card: #1a2235;
+  --card2: #1e2a40;
+  --border: rgba(255,255,255,0.08);
+  --text: #e8edf5;
+  --muted: #7a8aaa;
+  --g3: #FF6B35;
+  --g4: #f59e0b;
+  --g5: #06b6d4;
+  --g6: #8b5cf6;
+  --physics: #FF6B35;
+  --chemistry: #06b6d4;
+  --biology: #10b981;
+  --earth: #f59e0b;
+  --star: #ffd700;
+  --radius: 18px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Nanum Gothic',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
-  :root {
-    --physics: #FF6B35;
-    --chemistry: #7B2FBE;
-    --biology: #2ECC71;
-    --bg: #0D1B2A;
-    --card: #1A2B3C;
-    --card2: #162436;
-    --text: #F0F4F8;
-    --star: #FFD700;
-  }
+/* ── 별빛 배경 ── */
+.stars-bg{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse at 20% 50%,rgba(6,182,212,0.04) 0%,transparent 60%),
+             radial-gradient(ellipse at 80% 20%,rgba(139,92,246,0.04) 0%,transparent 60%);
+}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+/* ── 헤더 ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,14,26,0.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  padding:10px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{
+  font-family:'Jua',cursive;
+  font-size:1.3rem;
+  background:linear-gradient(135deg,#FF6B35,#f59e0b,#06b6d4);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.score-wrap{display:flex;align-items:center;gap:8px;}
+.star-badge{
+  background:linear-gradient(135deg,#f59e0b,#FF6B35);
+  border-radius:30px;padding:4px 12px;
+  font-family:'Jua',cursive;font-size:0.95rem;color:#fff;
+  box-shadow:0 2px 12px rgba(245,158,11,0.3);
+}
 
-  body {
-    font-family: 'Nanum Gothic', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ── 학년 탭 ── */
+.grade-tabs{
+  display:flex;gap:6px;padding:14px 12px 0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.grade-tabs::-webkit-scrollbar{display:none;}
+.gtab{
+  flex-shrink:0;
+  font-family:'Jua',cursive;font-size:0.95rem;
+  padding:8px 20px;border-radius:30px;border:none;
+  cursor:pointer;transition:all .2s;
+  background:var(--card);color:var(--muted);
+}
+.gtab.g3{--gc:var(--g3);}
+.gtab.g4{--gc:var(--g4);}
+.gtab.g5{--gc:var(--g5);}
+.gtab.g6{--gc:var(--g6);}
+.gtab.active{
+  background:var(--gc);color:#fff;
+  box-shadow:0 4px 16px rgba(255,255,255,0.15);
+  transform:translateY(-2px);
+}
 
-  /* ───── 헤더 ───── */
-  header {
-    text-align: center;
-    padding: 24px 16px 8px;
-    position: relative;
-  }
-  header h1 {
-    font-family: 'Jua', cursive;
-    font-size: clamp(1.6rem, 5vw, 2.6rem);
-    background: linear-gradient(135deg, #FF6B35, #FFD700, #2ECC71, #7B2FBE);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 2px;
-  }
-  #score-bar {
-    display: flex; justify-content: center; gap: 12px;
-    margin-top: 8px; font-size: 0.9rem;
-  }
-  .star-count { color: var(--star); font-weight: 800; font-size: 1.1rem; }
+/* ── 메인 콘텐츠 ── */
+main{position:relative;z-index:1;padding:16px 12px 80px;max-width:680px;margin:0 auto;}
+.grade-section{display:none;}
+.grade-section.active{display:block;}
 
-  /* ───── 탭 ───── */
-  .tabs {
-    display: flex; justify-content: center; gap: 8px;
-    padding: 16px 12px 0; flex-wrap: wrap;
-  }
-  .tab-btn {
-    font-family: 'Jua', cursive;
-    font-size: 1rem;
-    padding: 10px 22px;
-    border: none; border-radius: 50px;
-    cursor: pointer;
-    transition: all .25s;
-    opacity: 0.55;
-    position: relative;
-  }
-  .tab-btn.physics  { background: var(--physics);  color:#fff; }
-  .tab-btn.chemistry{ background: var(--chemistry); color:#fff; }
-  .tab-btn.biology  { background: var(--biology);  color:#fff; }
-  .tab-btn.active   { opacity: 1; transform: scale(1.1); box-shadow: 0 4px 18px rgba(255,255,255,.2); }
+/* ── 학년 인트로 배너 ── */
+.grade-banner{
+  border-radius:var(--radius);padding:18px 20px;margin-bottom:18px;
+  display:flex;align-items:center;gap:14px;
+  position:relative;overflow:hidden;
+}
+.grade-banner::before{
+  content:'';position:absolute;inset:0;opacity:0.12;
+  background:radial-gradient(circle at 80% 50%,white,transparent 70%);
+}
+.grade-banner .emoji{font-size:2.2rem;}
+.grade-banner h2{font-family:'Jua',cursive;font-size:1.2rem;margin-bottom:2px;}
+.grade-banner p{font-size:0.82rem;opacity:0.8;}
 
-  /* ───── 섹션 ───── */
-  .section { display: none; padding: 20px 12px 60px; max-width: 700px; margin: 0 auto; }
-  .section.active { display: block; }
+/* ── 단원 그리드 ── */
+.unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.unit-card{
+  background:var(--card);border-radius:var(--radius);
+  padding:14px;cursor:pointer;
+  border:1.5px solid transparent;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.unit-card:hover{transform:translateY(-3px);border-color:var(--uc);}
+.unit-card.active-unit{border-color:var(--uc);background:color-mix(in srgb,var(--uc) 10%,var(--card));}
+.unit-card .badge{
+  display:inline-block;font-size:0.68rem;
+  padding:2px 8px;border-radius:10px;margin-bottom:6px;
+  background:color-mix(in srgb,var(--uc) 20%,transparent);
+  color:var(--uc);font-weight:700;
+}
+.unit-card h4{font-family:'Jua',cursive;font-size:0.95rem;margin-bottom:2px;}
+.unit-card .unit-emoji{font-size:1.6rem;float:right;margin-top:-4px;}
+.unit-card p{font-size:0.75rem;color:var(--muted);line-height:1.4;}
 
-  /* 섹션 제목 */
-  .section-title {
-    font-family: 'Jua', cursive;
-    font-size: 1.5rem;
-    margin-bottom: 18px;
-    text-align: center;
-  }
+/* ── 활동 패널 ── */
+.activity-panel{
+  background:var(--card);border-radius:var(--radius);
+  padding:18px;margin-bottom:14px;
+  animation:slideUp .3s ease;
+  display:none;
+}
+.activity-panel.show{display:block;}
+@keyframes slideUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.panel-title{
+  font-family:'Jua',cursive;font-size:1.1rem;margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+}
 
-  /* ───── 카드 ───── */
-  .card {
-    background: var(--card);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 18px;
-    box-shadow: 0 6px 24px rgba(0,0,0,.3);
-    animation: fadeUp .4s ease;
-  }
-  @keyframes fadeUp {
-    from { opacity:0; transform:translateY(16px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
-  .card h3 {
-    font-family: 'Jua', cursive;
-    font-size: 1.15rem;
-    margin-bottom: 10px;
-  }
-  .card p { line-height: 1.7; font-size: 0.97rem; color: #CBD5E0; }
+/* ── 게임 탭 ── */
+.game-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.game-tab{
+  font-family:'Jua',cursive;font-size:0.82rem;
+  padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);
+  background:transparent;color:var(--muted);cursor:pointer;transition:all .15s;
+}
+.game-tab.active{background:var(--uc);border-color:var(--uc);color:#fff;}
 
-  /* ───── 캔버스 실험 ───── */
-  canvas {
-    display: block;
-    margin: 10px auto;
-    border-radius: 14px;
-    background: #0a1520;
-  }
-  .btn {
-    font-family: 'Jua', cursive;
-    font-size: 1rem;
-    padding: 10px 24px;
-    border: none; border-radius: 30px;
-    cursor: pointer;
-    margin: 6px 4px;
-    transition: transform .15s, box-shadow .15s;
-  }
-  .btn:active { transform: scale(.95); }
-  .btn-physics  { background: var(--physics);  color:#fff; }
-  .btn-chem     { background: var(--chemistry); color:#fff; }
-  .btn-bio      { background: var(--biology);  color:#fff; }
-  .btn-quiz     { background: var(--star); color:#333; }
+/* ── 캔버스 ── */
+canvas{display:block;margin:8px auto;border-radius:12px;background:#070d18;max-width:100%;}
 
-  /* ───── 퀴즈 ───── */
-  .quiz-box { background: var(--card2); border-radius: 16px; padding: 18px; }
-  .quiz-q { font-family:'Jua',cursive; font-size:1.05rem; margin-bottom:12px; line-height:1.5; }
-  .choices { display: flex; flex-direction: column; gap: 8px; }
-  .choice-btn {
-    font-family: 'Nanum Gothic', sans-serif;
-    font-size: 0.97rem;
-    padding: 10px 16px;
-    border-radius: 10px;
-    border: 2px solid #2a3f55;
-    background: #1e2f40;
-    color: var(--text);
-    cursor: pointer;
-    text-align: left;
-    transition: background .2s, border-color .2s;
-  }
-  .choice-btn:hover { background: #25394e; border-color: #4a7fa0; }
-  .choice-btn.correct { background: #1a5c34; border-color: var(--biology); }
-  .choice-btn.wrong   { background: #5c1a1a; border-color: #e74c3c; }
-  .quiz-result { margin-top: 12px; font-family:'Jua',cursive; font-size:1.1rem; min-height: 24px; }
+/* ── 퀴즈 ── */
+.quiz-wrap{background:var(--card2);border-radius:14px;padding:16px;}
+.quiz-q{font-family:'Jua',cursive;font-size:1rem;margin-bottom:12px;line-height:1.5;}
+.choices{display:flex;flex-direction:column;gap:7px;}
+.choice-btn{
+  font-family:'Nanum Gothic',sans-serif;font-size:0.92rem;
+  padding:10px 14px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--bg2);
+  color:var(--text);cursor:pointer;text-align:left;
+  transition:all .15s;
+}
+.choice-btn:hover:not(:disabled){background:var(--card2);border-color:var(--uc);}
+.choice-btn.correct{background:rgba(16,185,129,0.15);border-color:#10b981;color:#6ee7b7;}
+.choice-btn.wrong{background:rgba(239,68,68,0.15);border-color:#ef4444;color:#fca5a5;}
+.quiz-result{margin-top:10px;font-family:'Jua',cursive;font-size:1rem;min-height:22px;}
+.quiz-nav{display:flex;justify-content:flex-end;margin-top:10px;gap:8px;}
 
-  /* ───── 슬라이더 ───── */
-  input[type=range] {
-    width: 100%; accent-color: var(--physics); margin: 8px 0;
-  }
-  .slider-label { font-size:0.85rem; color:#90a4ae; }
+/* ── OX 게임 ── */
+.ox-wrap{text-align:center;}
+.ox-statement{
+  font-family:'Jua',cursive;font-size:1.05rem;
+  background:var(--card2);border-radius:12px;padding:16px;
+  margin-bottom:14px;line-height:1.5;
+}
+.ox-btns{display:flex;gap:12px;justify-content:center;}
+.ox-btn{
+  font-family:'Jua',cursive;font-size:2rem;
+  width:80px;height:80px;border-radius:50%;border:none;
+  cursor:pointer;transition:all .2s;
+}
+.ox-btn.o{background:rgba(16,185,129,0.2);color:#10b981;}
+.ox-btn.x{background:rgba(239,68,68,0.2);color:#ef4444;}
+.ox-btn:hover{transform:scale(1.1);}
+.ox-result{margin-top:12px;font-family:'Jua',cursive;font-size:1.1rem;min-height:24px;}
 
-  /* ───── 별 팝 ───── */
-  .star-pop {
-    position: fixed;
-    pointer-events: none;
-    font-size: 2rem;
-    animation: starFly 1s ease forwards;
-    z-index: 999;
-  }
-  @keyframes starFly {
-    0%   { opacity:1; transform:translateY(0) scale(1); }
-    100% { opacity:0; transform:translateY(-80px) scale(1.6); }
-  }
+/* ── 빈칸 채우기 ── */
+.blank-wrap{}
+.blank-q{
+  font-family:'Jua',cursive;font-size:1rem;
+  background:var(--card2);border-radius:12px;padding:16px;
+  margin-bottom:12px;line-height:1.8;
+}
+.blank-q .blank{
+  display:inline-block;
+  background:rgba(255,255,255,0.1);
+  border-bottom:2px solid var(--uc);
+  min-width:70px;padding:0 6px;
+  border-radius:4px;text-align:center;
+  color:var(--uc);font-weight:800;
+}
+.blank-opts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+.blank-opt{
+  font-family:'Jua',cursive;font-size:0.9rem;
+  padding:7px 16px;border-radius:20px;
+  border:1.5px solid var(--border);background:var(--bg2);
+  color:var(--text);cursor:pointer;transition:all .15s;
+}
+.blank-opt:hover{border-color:var(--uc);}
+.blank-opt.used{opacity:0.3;pointer-events:none;}
+.blank-opt.correct-opt{background:rgba(16,185,129,0.2);border-color:#10b981;color:#6ee7b7;}
+.blank-opt.wrong-opt{background:rgba(239,68,68,0.2);border-color:#ef4444;color:#fca5a5;}
 
-  /* ───── 주기율 버튼 ───── */
-  .element-grid {
-    display: flex; flex-wrap: wrap; gap: 6px; margin-top:10px;
-  }
-  .el-btn {
-    width: 52px; height: 52px;
-    border-radius: 10px;
-    border: none;
-    font-family:'Jua',cursive;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: transform .15s;
-  }
-  .el-btn:hover { transform: scale(1.15); }
-  #el-info { margin-top:10px; font-size:.9rem; min-height:40px; color:#a0c4e8; line-height:1.6; }
+/* ── 매칭 게임 ── */
+.match-wrap{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.match-col{display:flex;flex-direction:column;gap:6px;}
+.match-item{
+  font-family:'Jua',cursive;font-size:0.85rem;
+  padding:10px 12px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--bg2);
+  cursor:pointer;transition:all .15s;text-align:center;
+}
+.match-item:hover{border-color:var(--uc);}
+.match-item.selected{border-color:var(--uc);background:color-mix(in srgb,var(--uc) 15%,var(--bg2));}
+.match-item.matched{border-color:#10b981;background:rgba(16,185,129,0.15);pointer-events:none;}
+.match-item.wrong-flash{border-color:#ef4444;background:rgba(239,68,68,0.15);}
 
-  /* ───── 생물 세포 ───── */
-  #cell-canvas { cursor: crosshair; }
+/* ── 순서맞추기 ── */
+.order-wrap{display:flex;flex-direction:column;gap:8px;}
+.order-item{
+  font-family:'Jua',cursive;font-size:0.9rem;
+  padding:12px 16px;border-radius:10px;
+  border:1.5px solid var(--border);background:var(--bg2);
+  cursor:grab;user-select:none;
+  display:flex;align-items:center;gap:10px;
+  transition:all .15s;
+}
+.order-item:hover{border-color:var(--uc);}
+.order-item.dragging{opacity:0.5;border-color:var(--uc);}
+.order-item .drag-handle{color:var(--muted);font-size:1.1rem;}
 
+/* ── 버튼 ── */
+.btn{
+  font-family:'Jua',cursive;font-size:0.95rem;
+  padding:9px 20px;border-radius:24px;border:none;
+  cursor:pointer;transition:all .15s;
+}
+.btn:active{transform:scale(.96);}
+.btn-primary{background:var(--uc);color:#fff;box-shadow:0 3px 12px rgba(255,255,255,0.1);}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border);}
+.btn-sm{font-size:0.82rem;padding:6px 14px;}
+
+/* ── 진도바 ── */
+.progress-bar{
+  background:var(--card2);border-radius:10px;height:8px;margin:10px 0;overflow:hidden;
+}
+.progress-fill{
+  height:100%;border-radius:10px;
+  background:linear-gradient(90deg,var(--uc),color-mix(in srgb,var(--uc) 60%,white));
+  transition:width .4s ease;
+}
+
+/* ── 실험 슬라이더 ── */
+.exp-slider-wrap{margin:8px 0;}
+.exp-slider-wrap label{font-size:0.82rem;color:var(--muted);display:block;margin-bottom:4px;}
+input[type=range]{width:100%;accent-color:var(--uc);margin:4px 0;}
+
+/* ── 별 팝 ── */
+.star-pop{
+  position:fixed;pointer-events:none;
+  font-size:1.8rem;animation:starFly .9s ease forwards;z-index:9999;
+}
+@keyframes starFly{
+  0%{opacity:1;transform:translateY(0) scale(1);}
+  100%{opacity:0;transform:translateY(-70px) scale(1.5);}
+}
+
+/* ── 토스트 ── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:var(--card);border:1px solid var(--border);
+  border-radius:30px;padding:10px 20px;
+  font-family:'Jua',cursive;font-size:0.95rem;
+  z-index:9998;opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.toast.show{opacity:1;}
+
+/* ── 레벨 배지 ── */
+.level-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:0.72rem;padding:3px 8px;border-radius:8px;
+  background:color-mix(in srgb,var(--uc) 15%,transparent);
+  color:var(--uc);font-weight:700;margin-left:6px;
+}
 </style>
 </head>
 <body>
+<div class="stars-bg"></div>
 
+<!-- 헤더 -->
 <header>
-  <h1>🔬 신기한 과학 탐험대</h1>
-  <div id="score-bar">
-    <span>⭐ 별: </span><span class="star-count" id="starCount">0</span>
-    <span>개</span>
+  <div class="logo">🔬 지호박사</div>
+  <div class="score-wrap">
+    <div class="star-badge">⭐ <span id="starCount">0</span></div>
   </div>
 </header>
 
-<!-- 탭 -->
-<div class="tabs">
-  <button class="tab-btn physics active"  onclick="switchTab('physics')">🚀 물리학</button>
-  <button class="tab-btn chemistry"        onclick="switchTab('chemistry')">🧪 화학</button>
-  <button class="tab-btn biology"          onclick="switchTab('biology')">🌿 생물학</button>
+<!-- 학년 탭 -->
+<div class="grade-tabs">
+  <button class="gtab g3 active" onclick="switchGrade('g3',this)">🌱 초3</button>
+  <button class="gtab g4" onclick="switchGrade('g4',this)">🔥 초4</button>
+  <button class="gtab g5" onclick="switchGrade('g5',this)">💡 초5</button>
+  <button class="gtab g6" onclick="switchGrade('g6',this)">🚀 초6</button>
 </div>
 
-<!-- ══════════════ 물리학 ══════════════ -->
-<div class="section active" id="sec-physics">
-  <div class="section-title" style="color:var(--physics)">🚀 물리학 — 힘과 운동의 세계</div>
+<main>
 
-  <!-- 중력 낙하 실험 -->
-  <div class="card">
-    <h3>🍎 뉴턴의 사과 — 중력 낙하</h3>
-    <p>지구는 모든 물체를 아래로 잡아당겨요. 이걸 <b>중력</b>이라고 해요!</p>
-    <canvas id="gravCanvas" width="320" height="180"></canvas>
+<!-- ════════════════ 초3 ════════════════ -->
+<div class="grade-section active" id="sec-g3" style="--uc:var(--g3)">
+  <div class="grade-banner" style="background:linear-gradient(135deg,rgba(255,107,53,0.3),rgba(255,107,53,0.05))">
+    <div class="emoji">🌱</div>
     <div>
-      <label class="slider-label">무게 (크기): <span id="massVal">30</span></label>
-      <input type="range" id="massSlider" min="10" max="50" value="30">
-    </div>
-    <button class="btn btn-physics" onclick="dropApple()">🍎 떨어뜨리기!</button>
-    <p style="margin-top:8px; font-size:.87rem; color:#90a4ae;">무거운 공, 가벼운 공 — 어떤 게 먼저 땅에 닿을까요?</p>
-  </div>
-
-  <!-- 반사/굴절 -->
-  <div class="card">
-    <h3>💡 빛은 어떻게 움직일까?</h3>
-    <p>빛은 거울에 <b>반사</b>되고, 유리나 물을 만나면 <b>굴절</b>돼요.</p>
-    <canvas id="lightCanvas" width="320" height="160"></canvas>
-    <button class="btn btn-physics" onclick="animateLight()">💡 빛 쏘기!</button>
-  </div>
-
-  <!-- 물리 퀴즈 -->
-  <div class="card">
-    <h3>🎯 물리 퀴즈</h3>
-    <div class="quiz-box" id="physicsQuiz"></div>
-  </div>
-</div>
-
-<!-- ══════════════ 화학 ══════════════ -->
-<div class="section" id="sec-chemistry">
-  <div class="section-title" style="color:var(--chemistry)">🧪 화학 — 물질의 비밀</div>
-
-  <!-- 원소 탐험 -->
-  <div class="card">
-    <h3>⚗️ 원소 탐험대 — 클릭해봐!</h3>
-    <p>세상 모든 것은 <b>원소</b>로 만들어져 있어요.</p>
-    <div class="element-grid" id="elGrid"></div>
-    <div id="el-info">원소를 클릭하면 설명이 나와요! 👆</div>
-  </div>
-
-  <!-- 산&염기 버블 -->
-  <div class="card">
-    <h3>🌡️ 산성 vs 염기성 — 색이 변해요!</h3>
-    <p>리트머스 종이나 지시약은 산성·염기성에 따라 색이 바뀌어요.</p>
-    <canvas id="phCanvas" width="320" height="130"></canvas>
-    <div>
-      <label class="slider-label">pH: <span id="phVal">7</span></label>
-      <input type="range" id="phSlider" min="1" max="14" value="7" oninput="drawPH()">
+      <h2>초등 3학년 과학</h2>
+      <p>힘·소리·물질·생명·지구 — 7개 단원 탐험!</p>
     </div>
   </div>
 
-  <!-- 화학 퀴즈 -->
-  <div class="card">
-    <h3>🎯 화학 퀴즈</h3>
-    <div class="quiz-box" id="chemQuiz"></div>
-  </div>
+  <div class="unit-grid" id="g3-units"></div>
+  <div class="activity-panel" id="g3-panel"></div>
 </div>
 
-<!-- ══════════════ 생물학 ══════════════ -->
-<div class="section" id="sec-biology">
-  <div class="section-title" style="color:var(--biology)">🌿 생물학 — 생명의 신비</div>
-
-  <!-- 광합성 -->
-  <div class="card">
-    <h3>☀️ 광합성 — 식물의 밥 만들기</h3>
-    <p>식물은 햇빛·물·이산화탄소로 <b>포도당(음식)</b>과 <b>산소</b>를 만들어요!</p>
-    <canvas id="photoCanvas" width="320" height="180"></canvas>
-    <button class="btn btn-bio" onclick="startPhotosynthesis()">☀️ 햇빛 켜기!</button>
-    <button class="btn" style="background:#1e2f40;color:#a0c4e8;" onclick="stopPhotosynthesis()">🌙 끄기</button>
+<!-- ════════════════ 초4 ════════════════ -->
+<div class="grade-section" id="sec-g4" style="--uc:var(--g4)">
+  <div class="grade-banner" style="background:linear-gradient(135deg,rgba(245,158,11,0.3),rgba(245,158,11,0.05))">
+    <div class="emoji">🔥</div>
+    <div>
+      <h2>초등 4학년 과학</h2>
+      <p>자석·물·땅·생물·우주 — 7개 단원 탐험!</p>
+    </div>
   </div>
-
-  <!-- 세포 클릭 -->
-  <div class="card">
-    <h3>🔬 세포 탐험 — 클릭해봐!</h3>
-    <p>모든 생물은 <b>세포</b>로 이루어져 있어요. 세포 안을 들여다봐요!</p>
-    <canvas id="cell-canvas" width="320" height="200" onclick="handleCellClick(event)"></canvas>
-    <div id="cell-info" style="margin-top:8px;font-size:.9rem;color:#a0c4e8;min-height:36px;"></div>
-  </div>
-
-  <!-- 생물 퀴즈 -->
-  <div class="card">
-    <h3>🎯 생물 퀴즈</h3>
-    <div class="quiz-box" id="bioQuiz"></div>
-  </div>
+  <div class="unit-grid" id="g4-units"></div>
+  <div class="activity-panel" id="g4-panel"></div>
 </div>
+
+<!-- ════════════════ 초5 ════════════════ -->
+<div class="grade-section" id="sec-g5" style="--uc:var(--g5)">
+  <div class="grade-banner" style="background:linear-gradient(135deg,rgba(6,182,212,0.3),rgba(6,182,212,0.05))">
+    <div class="emoji">💡</div>
+    <div>
+      <h2>초등 5학년 과학</h2>
+      <p>빛·용액·몸·혼합·열 — 7개 단원 탐험!</p>
+    </div>
+  </div>
+  <div class="unit-grid" id="g5-units"></div>
+  <div class="activity-panel" id="g5-panel"></div>
+</div>
+
+<!-- ════════════════ 초6 ════════════════ -->
+<div class="grade-section" id="sec-g6" style="--uc:var(--g6)">
+  <div class="grade-banner" style="background:linear-gradient(135deg,rgba(139,92,246,0.3),rgba(139,92,246,0.05))">
+    <div class="emoji">🚀</div>
+    <div>
+      <h2>초등 6학년 과학</h2>
+      <p>산염기·운동·식물·지구·전기 — 7개 단원 탐험!</p>
+    </div>
+  </div>
+  <div class="unit-grid" id="g6-units"></div>
+  <div class="activity-panel" id="g6-panel"></div>
+</div>
+
+</main>
+
+<div class="toast" id="toast"></div>
 
 <script>
-// ─── 별 시스템 ───
-let stars = 0;
-function addStar(x, y) {
-  stars++;
-  document.getElementById('starCount').textContent = stars;
+// ════════════════════════════════════
+//  데이터
+// ════════════════════════════════════
+const UNITS = {
+  g3:[
+    {id:'g3u1',emoji:'💪',title:'힘과 우리 생활',badge:'물리',color:'#FF6B35',
+     desc:'밀기·당기기·무게·탄성 — 힘의 모든 것!',
+     games:['quiz','ox','blank','match']},
+    {id:'g3u2',emoji:'🐸',title:'동물의 생활',badge:'생명',color:'#10b981',
+     desc:'동물의 특징·사는 곳·먹이사슬 탐험!',
+     games:['quiz','ox','match','blank']},
+    {id:'g3u3',emoji:'🌿',title:'식물의 생활',badge:'생명',color:'#10b981',
+     desc:'뿌리·줄기·잎·꽃의 비밀을 알아봐요!',
+     games:['quiz','ox','blank','match']},
+    {id:'g3u4',emoji:'🥚',title:'생물의 한살이',badge:'생명',color:'#10b981',
+     desc:'알→애벌레→번데기→나비, 완전변태!',
+     games:['quiz','ox','order','match']},
+    {id:'g3u5',emoji:'🧪',title:'물질의 성질',badge:'화학',color:'#06b6d4',
+     desc:'고체·액체·기체의 차이를 알아봐요!',
+     games:['quiz','ox','blank','match']},
+    {id:'g3u6',emoji:'🌊',title:'지구와 바다',badge:'지구',color:'#f59e0b',
+     desc:'지구·바다·육지·날씨의 비밀!',
+     games:['quiz','ox','blank','match']},
+    {id:'g3u7',emoji:'🔊',title:'소리의 성질',badge:'물리',color:'#FF6B35',
+     desc:'소리의 발생·세기·높낮이·전달!',
+     games:['quiz','ox','blank','match']},
+  ],
+  g4:[
+    {id:'g4u1',emoji:'🧲',title:'자석의 이용',badge:'물리',color:'#FF6B35',
+     desc:'N극·S극·자기력·자석 활용!',games:['quiz','ox','blank','match']},
+    {id:'g4u2',emoji:'💧',title:'물의 상태 변화',badge:'화학',color:'#06b6d4',
+     desc:'얼음→물→수증기, 상태가 변해요!',games:['quiz','ox','order','blank']},
+    {id:'g4u3',emoji:'🏔️',title:'땅의 변화',badge:'지구',color:'#f59e0b',
+     desc:'흙·암석·침식·퇴적 — 땅의 이야기!',games:['quiz','ox','blank','match']},
+    {id:'g4u4',emoji:'🦠',title:'다양한 생물과 우리 생활',badge:'생명',color:'#10b981',
+     desc:'균류·원생생물·세균을 만나봐요!',games:['quiz','ox','match','blank']},
+    {id:'g4u5',emoji:'🌙',title:'밤하늘 관찰',badge:'지구',color:'#f59e0b',
+     desc:'별·달·행성·계절별 별자리!',games:['quiz','ox','blank','match']},
+    {id:'g4u6',emoji:'🌍',title:'생물과 환경',badge:'생명',color:'#10b981',
+     desc:'먹이사슬·환경오염·생태계!',games:['quiz','ox','blank','match']},
+    {id:'g4u7',emoji:'💨',title:'기체의 성질',badge:'화학',color:'#06b6d4',
+     desc:'공기·산소·이산화탄소 — 기체 탐험!',games:['quiz','ox','blank','match']},
+  ],
+  g5:[
+    {id:'g5u1',emoji:'🪨',title:'지층과 화석',badge:'지구',color:'#f59e0b',
+     desc:'지층이 만들어지는 과정과 화석의 비밀!',games:['quiz','ox','order','blank']},
+    {id:'g5u2',emoji:'💡',title:'빛의 성질',badge:'물리',color:'#FF6B35',
+     desc:'빛의 직진·반사·굴절·렌즈!',games:['quiz','ox','blank','match']},
+    {id:'g5u3',emoji:'🫗',title:'용해와 용액',badge:'화학',color:'#06b6d4',
+     desc:'용질·용매·용액·농도 탐험!',games:['quiz','ox','blank','match']},
+    {id:'g5u4',emoji:'🫀',title:'우리 몸의 구조와 기능',badge:'생명',color:'#10b981',
+     desc:'뼈·근육·소화·호흡·순환계!',games:['quiz','ox','match','blank']},
+    {id:'g5u5',emoji:'🔩',title:'혼합물의 분리',badge:'화학',color:'#06b6d4',
+     desc:'체·자석·증발 — 혼합물 분리법!',games:['quiz','ox','blank','match']},
+    {id:'g5u6',emoji:'🌦️',title:'날씨와 우리 생활',badge:'지구',color:'#f59e0b',
+     desc:'온도·습도·구름·비·바람·기압!',games:['quiz','ox','blank','match']},
+    {id:'g5u7',emoji:'🌡️',title:'열과 우리 생활',badge:'물리',color:'#FF6B35',
+     desc:'열의 이동·전도·대류·복사!',games:['quiz','ox','blank','match']},
+  ],
+  g6:[
+    {id:'g6u1',emoji:'🍋',title:'산과 염기',badge:'화학',color:'#06b6d4',
+     desc:'pH·지시약·중화반응 탐험!',games:['quiz','ox','blank','match']},
+    {id:'g6u2',emoji:'🏎️',title:'물체의 운동',badge:'물리',color:'#FF6B35',
+     desc:'속력·거리·시간·가속도 계산!',games:['quiz','ox','blank','match']},
+    {id:'g6u3',emoji:'🌸',title:'식물의 구조와 기능',badge:'생명',color:'#10b981',
+     desc:'광합성·증산·꽃의 구조 탐험!',games:['quiz','ox','match','blank']},
+    {id:'g6u4',emoji:'🌍',title:'지구의 운동',badge:'지구',color:'#f59e0b',
+     desc:'자전·공전·낮과 밤·계절!',games:['quiz','ox','order','blank']},
+    {id:'g6u5',emoji:'❄️',title:'계절의 변화',badge:'지구',color:'#f59e0b',
+     desc:'지구 기울기와 계절의 비밀!',games:['quiz','ox','blank','match']},
+    {id:'g6u6',emoji:'⚗️',title:'물질의 변화',badge:'화학',color:'#06b6d4',
+     desc:'물리 변화 vs 화학 변화!',games:['quiz','ox','blank','match']},
+    {id:'g6u7',emoji:'⚡',title:'전기의 이용',badge:'물리',color:'#FF6B35',
+     desc:'회로·직렬·병렬·전기 안전!',games:['quiz','ox','blank','match']},
+  ]
+};
+
+// ════════════════════════════════════
+//  게임 데이터
+// ════════════════════════════════════
+const GAME_DATA = {
+  // ── 초3 ──
+  g3u1:{
+    quiz:[
+      {q:'🏋️ 물체를 들어올리는 힘의 방향은?',c:['아래로','위로','옆으로','앞으로'],a:1},
+      {q:'🎳 볼링공을 굴리면 어디로 가나요?',c:['위로','공이 사라진다','굴린 방향으로','뒤로'],a:2},
+      {q:'🌀 용수철을 눌렀다 놓으면?',c:['그대로 있다','원래 모양으로 돌아온다','사라진다','커진다'],a:1},
+      {q:'⚖️ 무게를 잴 때 쓰는 도구는?',c:['자','온도계','저울','시계'],a:2},
+      {q:'💥 탄성이란 무엇인가요?',c:['물체가 녹는 것','힘을 받아도 변하지 않는 것','힘을 받고 모양이 변했다가 돌아오는 것','무거운 것'],a:2},
+    ],
+    ox:[
+      {s:'무거운 물체와 가벼운 물체를 같은 높이에서 떨어뜨리면 같은 시간에 떨어진다.',a:true},
+      {s:'고무줄은 탄성이 있다.',a:true},
+      {s:'힘의 방향을 바꾸면 물체의 운동 방향도 바뀐다.',a:true},
+      {s:'저울로 온도를 잴 수 있다.',a:false},
+      {s:'물체를 밀면 물체는 뒤로 물러난다.',a:true},
+    ],
+    blank:[
+      {q:'고무줄처럼 힘을 받아 모양이 변했다가 원래대로 돌아오는 성질을 [?]이라고 해요.',opts:['탄성','중력','부력','마찰'],a:'탄성'},
+      {q:'지구가 물체를 아래로 잡아당기는 힘을 [?]이라고 해요.',opts:['탄성','중력','자기력','전기력'],a:'중력'},
+      {q:'무게를 측정할 때 [?]을 사용해요.',opts:['온도계','자','저울','시계'],a:'저울'},
+    ],
+    match:[
+      {left:['중력','탄성','마찰력','자기력'],right:['자석이 쇠를 끌어당기는 힘','지구가 물체를 당기는 힘','고무줄이 늘어났다 돌아오는 힘','표면이 움직임을 방해하는 힘'],
+       pairs:{0:1,1:2,2:3,3:0}},
+    ],
+  },
+  g3u2:{
+    quiz:[
+      {q:'🐟 아가미로 숨 쉬는 동물은?',c:['고양이','물고기','새','토끼'],a:1},
+      {q:'🦅 날개가 있어 하늘을 날 수 있는 동물은?',c:['뱀','독수리','거북이','소'],a:1},
+      {q:'🌿 초식동물이 먹는 것은?',c:['다른 동물','식물','흙','돌'],a:1},
+      {q:'🐾 다리가 4개인 동물은?',c:['뱀','붕어','강아지','참새'],a:2},
+      {q:'🦁 먹이사슬에서 가장 꼭대기에 있는 동물을?',c:['풀','토끼','사자','메뚜기'],a:2},
+    ],
+    ox:[
+      {s:'물고기는 아가미로 호흡한다.',a:true},
+      {s:'뱀은 다리가 없는 동물이다.',a:true},
+      {s:'모든 새는 날 수 있다.',a:false},
+      {s:'먹이사슬에서 식물은 생산자이다.',a:true},
+      {s:'고래는 물속에 살지만 폐로 숨을 쉰다.',a:true},
+    ],
+    blank:[
+      {q:'물고기는 [?]로 숨을 쉬어요.',opts:['폐','아가미','피부','코'],a:'아가미'},
+      {q:'동물이 먹고 먹히는 관계를 [?]이라고 해요.',opts:['먹이사슬','생태계','서식지','변태'],a:'먹이사슬'},
+    ],
+    match:[
+      {left:['강아지','독수리','물고기','뱀'],right:['날개로 날아다님','아가미로 호흡','다리 없이 기어다님','4개의 다리'],
+       pairs:{0:3,1:0,2:1,3:2}},
+    ],
+  },
+  g3u3:{
+    quiz:[
+      {q:'🌱 식물이 물을 흡수하는 기관은?',c:['잎','줄기','뿌리','꽃'],a:2},
+      {q:'☀️ 광합성이 일어나는 곳은?',c:['뿌리','줄기','잎','꽃'],a:2},
+      {q:'🌺 꽃의 역할은?',c:['물 흡수','양분 이동','생식(씨앗 만들기)','광합성'],a:2},
+      {q:'💧 잎에서 물이 빠져나가는 현상은?',c:['광합성','증산','흡수','분해'],a:1},
+      {q:'🌵 선인장이 사막에서 살 수 있는 이유는?',c:['뿌리가 없어서','잎이 가시로 변해 물 손실을 줄임','꽃이 많아서','줄기가 없어서'],a:1},
+    ],
+    ox:[
+      {s:'뿌리는 식물이 물을 흡수하는 역할을 한다.',a:true},
+      {s:'광합성은 밤에 일어난다.',a:false},
+      {s:'줄기는 물과 영양분을 이동시키는 통로이다.',a:true},
+      {s:'모든 식물은 꽃을 피운다.',a:false},
+      {s:'잎의 기공으로 산소가 나온다.',a:true},
+    ],
+    blank:[
+      {q:'식물이 햇빛·물·이산화탄소로 포도당을 만드는 과정을 [?]이라고 해요.',opts:['광합성','증산','호흡','분해'],a:'광합성'},
+      {q:'뿌리는 식물이 [?]을 흡수하는 기관이에요.',opts:['햇빛','물','이산화탄소','산소'],a:'물'},
+    ],
+    match:[
+      {left:['뿌리','줄기','잎','꽃'],right:['광합성·증산','씨앗 생산','물과 양분 이동','물 흡수'],
+       pairs:{0:3,1:2,2:0,3:1}},
+    ],
+  },
+  g3u4:{
+    quiz:[
+      {q:'🦋 번데기에서 나오는 곤충은?',c:['메뚜기','나비','잠자리','바퀴벌레'],a:1},
+      {q:'🐸 개구리는 어떤 한살이를 하나요?',c:['완전변태','불완전변태','직접발생','분열'],a:1},
+      {q:'🥚 닭의 한살이 순서는?',c:['병아리→알→닭','알→병아리→닭','닭→병아리→알','알→닭→병아리'],a:1},
+      {q:'🐛 완전변태를 하는 곤충은?',c:['메뚜기','사마귀','나비','잠자리만'],a:2},
+      {q:'🌱 씨앗→싹→잎→꽃→열매 는 무엇의 한살이?',c:['동물','식물','곤충','물고기'],a:1},
+    ],
+    ox:[
+      {s:'나비는 완전변태를 한다.',a:true},
+      {s:'메뚜기는 번데기 단계가 없다.',a:true},
+      {s:'개구리는 물속에서만 살 수 있다.',a:false},
+      {s:'닭은 알을 낳아 번식한다.',a:true},
+      {s:'나비의 한살이: 알→애벌레→번데기→나비 순서이다.',a:true},
+    ],
+    order:[
+      {title:'🦋 나비의 한살이 순서를 맞춰봐요!',
+       items:['알','애벌레','번데기','나비'],
+       correct:[0,1,2,3]},
+      {title:'🌱 강낭콩의 한살이 순서를 맞춰봐요!',
+       items:['꽃','씨앗','싹','열매'],
+       correct:[1,2,0,3]},
+    ],
+    match:[
+      {left:['나비','메뚜기','개구리','닭'],right:['알→올챙이→개구리','알→애벌레→번데기→나비','알→병아리→닭','알→애벌레→나비(불완전변태)'],
+       pairs:{0:1,1:3,2:0,3:2}},
+    ],
+  },
+  g3u5:{
+    quiz:[
+      {q:'🧊 얼음처럼 모양이 일정한 물질의 상태는?',c:['기체','액체','고체','플라즈마'],a:2},
+      {q:'💧 물처럼 흐르지만 부피가 일정한 상태는?',c:['고체','기체','플라즈마','액체'],a:3},
+      {q:'💨 공기처럼 모양과 부피가 일정하지 않은 상태는?',c:['고체','액체','기체','반고체'],a:2},
+      {q:'🌡️ 물을 가열하면 어떻게 되나요?',c:['고체가 된다','기체(수증기)가 된다','사라진다','색이 변한다'],a:1},
+      {q:'❄️ 물이 얼면 어떻게 되나요?',c:['기체','액체','고체(얼음)','사라짐'],a:2},
+    ],
+    ox:[
+      {s:'고체는 모양이 변하지 않는다.',a:true},
+      {s:'액체는 담는 그릇에 따라 모양이 바뀐다.',a:true},
+      {s:'기체는 눈에 보인다.',a:false},
+      {s:'물을 냉각하면 얼음이 된다.',a:true},
+      {s:'공기는 고체이다.',a:false},
+    ],
+    blank:[
+      {q:'얼음처럼 모양이 일정하고 단단한 물질의 상태를 [?]이라고 해요.',opts:['기체','액체','고체','플라즈마'],a:'고체'},
+      {q:'물처럼 흐를 수 있고 담는 그릇에 따라 모양이 변하는 상태를 [?]이라고 해요.',opts:['고체','기체','반고체','액체'],a:'액체'},
+      {q:'공기처럼 모양과 부피가 일정하지 않은 상태를 [?]이라고 해요.',opts:['고체','액체','기체','반액체'],a:'기체'},
+    ],
+    match:[
+      {left:['고체','액체','기체','물'],right:['공기','얼음','물','수증기로 변함'],
+       pairs:{0:1,1:3,2:0,3:2}},
+    ],
+  },
+  g3u6:{
+    quiz:[
+      {q:'🌍 지구에서 바다가 차지하는 비율은?',c:['약 30%','약 50%','약 70%','약 90%'],a:2},
+      {q:'🏝️ 바다로 둘러싸인 육지를?',c:['반도','섬','대륙','해협'],a:1},
+      {q:'🌊 파도가 생기는 주요 원인은?',c:['지진','바람','비','태양'],a:1},
+      {q:'🌧️ 비가 내리면 물은 어디로 가나요?',c:['사라진다','강→바다로 흘러간다','하늘로 올라간다','땅속에만 남는다'],a:1},
+      {q:'🌤️ 구름은 무엇으로 이루어져 있나요?',c:['연기','먼지','작은 물방울·얼음알갱이','수증기만'],a:2},
+    ],
+    ox:[
+      {s:'지구의 약 70%는 바다이다.',a:true},
+      {s:'섬은 바다로 둘러싸인 육지이다.',a:true},
+      {s:'강물은 결국 바다로 흘러간다.',a:true},
+      {s:'사막에는 비가 전혀 오지 않는다.',a:false},
+      {s:'구름은 작은 물방울로 이루어진다.',a:true},
+    ],
+    blank:[
+      {q:'지구 표면의 약 70%를 차지하는 것은 [?]이에요.',opts:['육지','바다','사막','산'],a:'바다'},
+      {q:'강물은 [?]로 흘러들어가요.',opts:['하늘','땅속','바다','호수'],a:'바다'},
+    ],
+    match:[
+      {left:['섬','반도','대륙','해협'],right:['바다로 둘러싸인 큰 육지','육지로 연결된 돌출 육지','두 바다를 잇는 좁은 수로','바다로 완전히 둘러싸인 땅'],
+       pairs:{0:3,1:1,2:0,3:2}},
+    ],
+  },
+  g3u7:{
+    quiz:[
+      {q:'🔊 소리가 발생하는 원인은?',c:['색깔 변화','물체의 진동','무게 변화','온도 변화'],a:1},
+      {q:'🥁 북을 세게 치면 소리가 어떻게 되나요?',c:['높아진다','작아진다','커진다','느려진다'],a:2},
+      {q:'🎵 소리의 높낮이는 무엇에 따라 결정되나요?',c:['진동의 세기','진동의 빠르기(진동수)','물체의 색깔','물체의 무게'],a:1},
+      {q:'🌊 소리가 전달되려면 무엇이 필요한가요?',c:['빛','열','물질(매질)','색깔'],a:2},
+      {q:'🌌 우주에서 소리가 전달되지 않는 이유는?',c:['너무 뜨거워서','물질이 없어서(진공)','빛이 없어서','중력이 없어서'],a:1},
+    ],
+    ox:[
+      {s:'소리는 물체의 진동으로 발생한다.',a:true},
+      {s:'소리는 진공(우주)에서도 전달된다.',a:false},
+      {s:'북을 세게 치면 소리가 커진다.',a:true},
+      {s:'기타 줄을 짧게 하면 소리가 높아진다.',a:true},
+      {s:'소리는 물속에서는 전달되지 않는다.',a:false},
+    ],
+    blank:[
+      {q:'소리는 물체의 [?]으로 발생해요.',opts:['색깔','무게','진동','온도'],a:'진동'},
+      {q:'소리의 크기를 [?]이라고 해요.',opts:['진동수','진폭(세기)','파장','속도'],a:'진폭(세기)'},
+      {q:'우주에서 소리가 전달되지 않는 이유는 [?]이 없기 때문이에요.',opts:['빛','열','물질(매질)','중력'],a:'물질(매질)'},
+    ],
+    match:[
+      {left:['진동','진폭','진동수','매질'],right:['소리 전달에 필요한 물질','소리의 크기','소리의 높낮이','소리가 발생하는 원인'],
+       pairs:{0:3,1:1,2:2,3:0}},
+    ],
+  },
+
+  // ── 초4 ──
+  g4u1:{
+    quiz:[
+      {q:'🧲 자석에서 철을 가장 강하게 끌어당기는 곳은?',c:['중간','가장자리(극)','뒷면','없음'],a:1},
+      {q:'🔴 같은 극끼리는?',c:['끌어당긴다','밀어낸다','아무 반응 없다','붙는다'],a:1},
+      {q:'🧭 나침반 바늘이 항상 가리키는 방향은?',c:['동서','남북','위아래','앞뒤'],a:1},
+      {q:'🪝 자석에 붙는 물질은?',c:['플라스틱','유리','철','나무'],a:2},
+      {q:'💡 자석을 두 조각으로 자르면?',c:['자성이 없어진다','S극만 남는다','각각 N·S극이 생긴다','N극만 남는다'],a:2},
+    ],
+    ox:[
+      {s:'자석의 같은 극끼리는 밀어낸다.',a:true},
+      {s:'자석에 나무가 붙는다.',a:false},
+      {s:'나침반은 지구 자기장을 이용한 도구이다.',a:true},
+      {s:'자석을 반으로 잘라도 N극과 S극이 생긴다.',a:true},
+      {s:'알루미늄도 자석에 붙는다.',a:false},
+    ],
+    blank:[
+      {q:'자석에서 자기력이 가장 강한 부분을 [?]이라고 해요.',opts:['중간','극(N극·S극)','표면','뒷면'],a:'극(N극·S극)'},
+      {q:'자석의 다른 극끼리는 서로 [?]해요.',opts:['밀어낸다','아무반응','끌어당긴다','폭발한다'],a:'끌어당긴다'},
+    ],
+    match:[
+      {left:['N극','S극','같은 극','다른 극'],right:['서로 당김','서로 밀어냄','북쪽을 가리킴','남쪽을 가리킴'],
+       pairs:{0:2,1:3,2:1,3:0}},
+    ],
+  },
+  g4u2:{
+    quiz:[
+      {q:'💧 물이 수증기로 변하는 현상은?',c:['응결','증발','융해','응고'],a:1},
+      {q:'❄️ 물이 얼음으로 변하는 현상은?',c:['증발','응결','응고','융해'],a:2},
+      {q:'🌡️ 얼음이 녹으면?',c:['기체가 된다','물이 된다','사라진다','작아진다'],a:1},
+      {q:'🌧️ 구름 속 물방울이 커져서 떨어지면?',c:['눈','우박','비','이슬'],a:2},
+      {q:'☁️ 냄비에서 나오는 김은 무슨 상태인가요?',c:['수증기','물','고체','얼음'],a:0},
+    ],
+    ox:[
+      {s:'물이 얼면 부피가 늘어난다.',a:true},
+      {s:'수증기는 눈에 보이지 않는다.',a:true},
+      {s:'얼음이 녹으면 기체가 된다.',a:false},
+      {s:'물의 세 가지 상태는 고체·액체·기체이다.',a:true},
+      {s:'증발은 물이 수증기로 변하는 현상이다.',a:true},
+    ],
+    order:[
+      {title:'💧 물의 상태변화 순서를 맞춰봐요! (가열할 때)',
+       items:['얼음(고체)','물(액체)','수증기(기체)','응결(냉각)'],
+       correct:[0,1,2,3]},
+    ],
+    blank:[
+      {q:'물이 수증기로 변하는 현상을 [?]이라고 해요.',opts:['응결','증발','응고','융해'],a:'증발'},
+      {q:'물이 얼음으로 변하는 현상을 [?]이라고 해요.',opts:['증발','융해','응결','응고'],a:'응고'},
+    ],
+  },
+  g4u3:{
+    quiz:[
+      {q:'🪨 암석이 부서져 만들어진 것은?',c:['물','공기','흙','유리'],a:2},
+      {q:'🌊 강물이 암석을 깎아내는 현상을?',c:['퇴적','침식','풍화','변성'],a:1},
+      {q:'🏔️ 강 상류의 돌 모양은?',c:['둥글둥글','납작납작','뾰족뾰족','구멍이 많다'],a:2},
+      {q:'🌋 화산이 폭발하면 어떤 암석이 만들어지나요?',c:['퇴적암','변성암','화성암','석회암'],a:2},
+      {q:'🦕 화석은 어떤 암석에서 주로 발견되나요?',c:['화성암','변성암','퇴적암','화강암'],a:2},
+    ],
+    ox:[
+      {s:'강 상류의 돌은 모서리가 뾰족하다.',a:true},
+      {s:'침식은 강물이 암석을 깎는 현상이다.',a:true},
+      {s:'흙은 암석이 부서져 만들어진다.',a:true},
+      {s:'화석은 화성암에서 주로 발견된다.',a:false},
+      {s:'퇴적은 모래나 진흙이 쌓이는 현상이다.',a:true},
+    ],
+    blank:[
+      {q:'강물이 암석을 깎아내는 것을 [?]이라고 해요.',opts:['퇴적','침식','변성','생성'],a:'침식'},
+      {q:'모래나 진흙이 쌓이는 현상을 [?]이라고 해요.',opts:['침식','풍화','퇴적','변성'],a:'퇴적'},
+    ],
+    match:[
+      {left:['침식','퇴적','풍화','화성암'],right:['화산으로 생긴 암석','암석이 잘게 부서지는 현상','모래가 쌓이는 현상','강물이 암석을 깎는 현상'],
+       pairs:{0:3,1:2,2:1,3:0}},
+    ],
+  },
+  g4u4:{
+    quiz:[
+      {q:'🍄 버섯은 어떤 생물인가요?',c:['식물','동물','균류','세균'],a:2},
+      {q:'🦠 세균의 크기는?',c:['눈으로 볼 수 있다','현미경으로만 볼 수 있다','아주 크다','없다'],a:1},
+      {q:'🧫 우리가 먹는 요구르트는 어떤 생물이 만드나요?',c:['균류','세균(유산균)','원생생물','바이러스'],a:1},
+      {q:'🌿 아메바는 어떤 생물인가요?',c:['동물','식물','균류','원생생물'],a:3},
+      {q:'🍞 빵을 만들 때 사용하는 효모는?',c:['세균','원생생물','균류','바이러스'],a:2},
+    ],
+    ox:[
+      {s:'버섯은 균류이다.',a:true},
+      {s:'세균은 눈으로 볼 수 있다.',a:false},
+      {s:'유산균은 요구르트를 만드는 데 사용된다.',a:true},
+      {s:'아메바는 원생생물이다.',a:true},
+      {s:'모든 세균은 우리 몸에 해롭다.',a:false},
+    ],
+    blank:[
+      {q:'버섯·곰팡이처럼 포자로 번식하는 생물을 [?]이라고 해요.',opts:['세균','원생생물','균류','바이러스'],a:'균류'},
+      {q:'요구르트를 만드는 [?]은 우리에게 유익한 세균이에요.',opts:['아메바','바이러스','유산균','곰팡이'],a:'유산균'},
+    ],
+    match:[
+      {left:['균류','세균','원생생물','바이러스'],right:['아메바·짚신벌레','요구르트 속 유산균','버섯·곰팡이','스스로 증식 불가'],
+       pairs:{0:2,1:1,2:0,3:3}},
+    ],
+  },
+  g4u5:{
+    quiz:[
+      {q:'🌟 밤하늘에서 스스로 빛을 내는 것은?',c:['달','행성','별','혜성'],a:2},
+      {q:'🌙 달이 스스로 빛을 낼 수 있나요?',c:['예, 낼 수 있다','아니요, 태양 빛을 반사한다','가끔 낸다','모른다'],a:1},
+      {q:'⭐ 북두칠성은 몇 개의 별로 이루어지나요?',c:['5개','6개','7개','8개'],a:2},
+      {q:'🌌 우리 태양계가 속한 은하는?',c:['안드로메다','삼각형자리','마젤란','우리은하(밀키웨이)'],a:3},
+      {q:'🔭 별을 관찰할 때 사용하는 도구는?',c:['현미경','망원경','청진기','돋보기만'],a:1},
+    ],
+    ox:[
+      {s:'달은 스스로 빛을 낸다.',a:false},
+      {s:'별자리는 계절마다 달라 보인다.',a:true},
+      {s:'북극성은 항상 북쪽 하늘에 있다.',a:true},
+      {s:'태양은 별이다.',a:true},
+      {s:'행성은 스스로 빛을 낸다.',a:false},
+    ],
+    blank:[
+      {q:'달이 빛나는 이유는 [?]의 빛을 반사하기 때문이에요.',opts:['지구','별','태양','화성'],a:'태양'},
+      {q:'별들이 모여 그림처럼 보이는 것을 [?]이라고 해요.',opts:['은하','별자리','성운','혜성'],a:'별자리'},
+    ],
+    match:[
+      {left:['태양','달','별','행성'],right:['태양 주위를 도는 천체','스스로 빛을 내는 항성','지구 주위를 도는 위성','태양 빛을 반사하는 위성'],
+       pairs:{0:1,1:3,2:0,3:2}},
+    ],
+  },
+  g4u6:{
+    quiz:[
+      {q:'🌿 먹이사슬에서 풀→토끼→여우 순서에서 풀은?',c:['포식자','분해자','생산자','소비자'],a:2},
+      {q:'♻️ 죽은 동식물을 분해하는 생물은?',c:['식물','동물','분해자(세균·곰팡이)','태양'],a:2},
+      {q:'🏭 공장 연기가 환경에 미치는 영향은?',c:['아무 영향 없음','대기오염','수질 개선','토양 개선'],a:1},
+      {q:'🐸 환경이 오염되면 생물에게 어떤 영향을 주나요?',c:['좋아진다','개체수가 늘어난다','서식지 파괴·멸종 위기','아무 변화 없다'],a:2},
+      {q:'🌱 생태계를 지키는 방법은?',c:['쓰레기를 마구 버린다','에너지를 많이 쓴다','재활용하고 환경 보호','산을 더 개발한다'],a:2},
+    ],
+    ox:[
+      {s:'먹이사슬에서 식물은 생산자이다.',a:true},
+      {s:'분해자는 죽은 생물을 분해한다.',a:true},
+      {s:'환경오염은 생물 다양성을 높인다.',a:false},
+      {s:'생태계는 생물과 환경이 상호작용하는 시스템이다.',a:true},
+      {s:'플라스틱 사용을 줄이면 환경 보호에 도움이 된다.',a:true},
+    ],
+    blank:[
+      {q:'먹이사슬에서 풀처럼 스스로 양분을 만드는 생물을 [?]이라고 해요.',opts:['소비자','분해자','생산자','포식자'],a:'생산자'},
+      {q:'죽은 동식물을 분해하는 세균·곰팡이 같은 생물을 [?]이라고 해요.',opts:['생산자','소비자','포식자','분해자'],a:'분해자'},
+    ],
+    match:[
+      {left:['생산자','1차 소비자','2차 소비자','분해자'],right:['세균·곰팡이','여우','토끼','풀'],
+       pairs:{0:3,1:2,2:1,3:0}},
+    ],
+  },
+  g4u7:{
+    quiz:[
+      {q:'💨 공기는 어떤 물질의 상태인가요?',c:['고체','액체','기체','반고체'],a:2},
+      {q:'🫁 우리가 숨쉴 때 마시는 기체는?',c:['이산화탄소','질소','산소','수소'],a:2},
+      {q:'🌿 식물이 광합성에 사용하는 기체는?',c:['산소','수소','이산화탄소','질소'],a:2},
+      {q:'🎈 풍선이 부풀어 오르는 이유는?',c:['고체가 들어있어서','액체가 들어있어서','기체가 공간을 채워서','마법'],a:2},
+      {q:'🌊 잠수함이 물속에서 뜨거나 가라앉을 때 이용하는 것은?',c:['전기','온도','기체(공기)의 양 조절','자석'],a:2},
+    ],
+    ox:[
+      {s:'기체는 모양이 일정하지 않다.',a:true},
+      {s:'공기는 기체이다.',a:true},
+      {s:'이산화탄소는 우리가 숨쉬는 산소이다.',a:false},
+      {s:'기체는 압력을 가하면 부피가 줄어든다.',a:true},
+      {s:'질소는 공기의 약 78%를 차지한다.',a:true},
+    ],
+    blank:[
+      {q:'우리가 숨쉴 때 마시는 기체는 [?]이에요.',opts:['이산화탄소','질소','수소','산소'],a:'산소'},
+      {q:'식물이 광합성에 사용하고 우리가 내뱉는 기체는 [?]이에요.',opts:['산소','수소','이산화탄소','질소'],a:'이산화탄소'},
+    ],
+    match:[
+      {left:['산소','이산화탄소','질소','수소'],right:['공기의 78%','광합성 재료·호흡 부산물','가장 가벼운 기체','호흡에 필요한 기체'],
+       pairs:{0:3,1:1,2:0,3:2}},
+    ],
+  },
+
+  // ── 초5 (핵심만) ──
+  g5u1:{
+    quiz:[
+      {q:'🪨 지층이 만들어지려면 무엇이 필요한가요?',c:['화산','퇴적물이 쌓여야 함','자석','빛'],a:1},
+      {q:'🦕 화석은 어디서 주로 발견되나요?',c:['화성암','퇴적암','변성암','화강암'],a:1},
+      {q:'📏 지층의 줄무늬로 알 수 있는 것은?',c:['온도','과거 환경·생물 정보','미래 날씨','현재 날씨'],a:1},
+      {q:'🌊 수평으로 쌓인 지층이 구불구불해진 이유는?',c:['비가 와서','지각이 힘을 받아서','동물이 파서','사람이 만들어서'],a:1},
+    ],
+    ox:[
+      {s:'화석은 퇴적암에서 주로 발견된다.',a:true},
+      {s:'지층은 아래쪽이 더 오래된 층이다.',a:true},
+      {s:'화석을 통해 과거 생물을 알 수 있다.',a:true},
+      {s:'지층은 항상 수평으로만 존재한다.',a:false},
+    ],
+    blank:[
+      {q:'지층에서 발견되는 옛날 생물의 흔적을 [?]이라고 해요.',opts:['화석','광물','암석','토양'],a:'화석'},
+      {q:'지층은 [?]물이 쌓여서 만들어져요.',opts:['화성','변성','퇴적','결정'],a:'퇴적'},
+    ],
+    match:[
+      {left:['퇴적암','화성암','변성암','화석'],right:['열·압력으로 변한 암석','화산으로 생긴 암석','과거 생물의 흔적','층층이 쌓인 암석'],
+       pairs:{0:3,1:1,2:0,3:2}},
+    ],
+  },
+  g5u2:{
+    quiz:[
+      {q:'💡 빛이 곧게 나아가는 성질은?',c:['반사','굴절','직진','분산'],a:2},
+      {q:'🪞 거울에서 빛이 튕겨나오는 현상은?',c:['굴절','직진','반사','흡수'],a:2},
+      {q:'🌈 빛이 프리즘을 통과할 때 어떻게 되나요?',c:['사라진다','직진한다','여러 색으로 나뉜다','반사된다'],a:2},
+      {q:'🔍 볼록렌즈로 빛을 모으면?',c:['빛이 퍼진다','한 점에 모인다','사라진다','반사된다'],a:1},
+    ],
+    ox:[
+      {s:'빛은 직진한다.',a:true},
+      {s:'거울에서 빛은 굴절된다.',a:false},
+      {s:'볼록렌즈는 빛을 모으는 역할을 한다.',a:true},
+      {s:'무지개는 빛이 물방울에서 굴절·분산되어 생긴다.',a:true},
+    ],
+    blank:[
+      {q:'빛이 거울에 부딪혀 튕겨나오는 현상을 [?]이라고 해요.',opts:['굴절','직진','반사','흡수'],a:'반사'},
+      {q:'빛이 물이나 유리를 통과할 때 방향이 꺾이는 현상을 [?]이라고 해요.',opts:['반사','직진','흡수','굴절'],a:'굴절'},
+    ],
+    match:[
+      {left:['직진','반사','굴절','분산'],right:['프리즘으로 빛이 나뉨','빛이 곧게 나아감','거울에서 튕김','물속에서 꺾임'],
+       pairs:{0:1,1:2,2:3,3:0}},
+    ],
+  },
+  g5u3:{
+    quiz:[
+      {q:'🫗 물에 설탕이 녹으면 설탕은 어떻게 되나요?',c:['사라진다','눈에 안 보이게 녹아 퍼진다','바닥에 가라앉는다','기체가 된다'],a:1},
+      {q:'💧 용질이 녹아 있는 액체를 무엇이라고 하나요?',c:['용매','용질','용액','혼합물'],a:2},
+      {q:'🌊 소금물에서 용매는?',c:['소금','물','소금물 전체','없다'],a:1},
+      {q:'📊 용액이 진할수록 어떻게 되나요?',c:['밀도가 낮아진다','가벼워진다','밀도가 높아진다','아무변화 없다'],a:2},
+    ],
+    ox:[
+      {s:'용질은 용매에 녹는 물질이다.',a:true},
+      {s:'소금물에서 물은 용매이다.',a:true},
+      {s:'설탕이 물에 녹으면 설탕은 사라진다.',a:false},
+      {s:'온도가 높을수록 고체가 물에 더 잘 녹는다.',a:true},
+    ],
+    blank:[
+      {q:'용질이 용매에 녹아 있는 액체를 [?]이라고 해요.',opts:['용질','용매','혼합물','용액'],a:'용액'},
+      {q:'소금물에서 소금은 [?]이에요.',opts:['용매','용액','용질','혼합물'],a:'용질'},
+    ],
+    match:[
+      {left:['용질','용매','용액','농도'],right:['용액의 진하기','녹이는 물질(물)','녹아 있는 물질(소금)','용질+용매'],
+       pairs:{0:2,1:1,2:3,3:0}},
+    ],
+  },
+  g5u4:{
+    quiz:[
+      {q:'🦴 우리 몸에서 몸을 지지하고 보호하는 기관은?',c:['근육','피부','뼈대','혈관'],a:2},
+      {q:'🫀 온몸에 혈액을 내보내는 기관은?',c:['폐','위','심장','신장'],a:2},
+      {q:'🫁 산소와 이산화탄소를 교환하는 기관은?',c:['심장','위','폐','장'],a:2},
+      {q:'🍔 음식을 소화시키는 소화기관이 아닌 것은?',c:['위','소장','대장','심장'],a:3},
+    ],
+    ox:[
+      {s:'심장은 혈액을 온몸으로 내보낸다.',a:true},
+      {s:'폐는 음식을 소화시킨다.',a:false},
+      {s:'뼈는 우리 몸을 지지하고 내부 장기를 보호한다.',a:true},
+      {s:'근육은 뼈에 붙어 운동을 돕는다.',a:true},
+    ],
+    blank:[
+      {q:'음식이 소화되어 영양소를 흡수하는 기관은 [?]이에요.',opts:['위','심장','소장','폐'],a:'소장'},
+      {q:'혈액을 온몸으로 내보내는 기관은 [?]이에요.',opts:['폐','신장','위','심장'],a:'심장'},
+    ],
+    match:[
+      {left:['심장','폐','위','뼈'],right:['몸 지지·보호','혈액 순환','기체 교환','음식 소화'],
+       pairs:{0:2,1:3,2:0,3:1}},
+    ],
+  },
+  g5u5:{
+    quiz:[
+      {q:'🔩 혼합물에서 철 가루를 분리할 때 사용하는 것은?',c:['체','자석','증발','필터'],a:1},
+      {q:'🧂 소금물에서 소금을 분리하는 방법은?',c:['자석','체','증발·결정화','필터'],a:2},
+      {q:'🌊 모래와 물의 혼합물을 분리하는 방법은?',c:['자석','증발','거름(필터)','압축'],a:2},
+      {q:'🎨 크로마토그래피로 분리하는 것은?',c:['철가루','소금','색소(잉크)','모래'],a:2},
+    ],
+    ox:[
+      {s:'자석으로 철 가루를 혼합물에서 분리할 수 있다.',a:true},
+      {s:'소금물을 증발시키면 소금을 얻을 수 있다.',a:true},
+      {s:'체는 입자 크기가 같은 물질을 분리할 때 사용한다.',a:false},
+      {s:'크로마토그래피로 색소를 분리할 수 있다.',a:true},
+    ],
+    blank:[
+      {q:'철가루와 모래의 혼합물은 [?]으로 분리해요.',opts:['체','증발','자석','필터'],a:'자석'},
+      {q:'소금물에서 소금을 얻으려면 물을 [?]시키면 돼요.',opts:['냉각','자석','압축','증발'],a:'증발'},
+    ],
+    match:[
+      {left:['자석','체','증발','거름'],right:['소금물→소금','모래+물 분리','굵기 다른 물질','철가루 분리'],
+       pairs:{0:3,1:2,2:0,3:1}},
+    ],
+  },
+  g5u6:{
+    quiz:[
+      {q:'🌡️ 온도를 측정하는 도구는?',c:['기압계','온도계','습도계','풍속계'],a:1},
+      {q:'💧 공기 중 수분 양을 나타내는 것은?',c:['온도','기압','습도','풍속'],a:2},
+      {q:'☁️ 구름이 만들어지는 과정은?',c:['물이 증발→수증기→냉각→구름','비가 증발','바람이 모여서','태양이 만든다'],a:0},
+      {q:'🌪️ 기압이 낮은 곳으로 공기가 이동하는 현상은?',c:['구름','바람','비','눈'],a:1},
+    ],
+    ox:[
+      {s:'습도가 높으면 비가 올 가능성이 높다.',a:true},
+      {s:'바람은 기압이 낮은 곳에서 높은 곳으로 분다.',a:false},
+      {s:'구름은 수증기가 냉각되어 생긴 작은 물방울이다.',a:true},
+      {s:'이슬은 새벽에 기온이 낮아지며 생긴다.',a:true},
+    ],
+    blank:[
+      {q:'공기 중 수증기의 양을 나타내는 것을 [?]이라고 해요.',opts:['온도','기압','습도','풍속'],a:'습도'},
+      {q:'바람은 기압이 [?] 곳에서 [?] 곳으로 불어요.',opts:['높은→낮은','낮은→높은','같은→같은','없는→있는'],a:'높은→낮은'},
+    ],
+    match:[
+      {left:['온도계','습도계','기압계','풍속계'],right:['바람 속도 측정','대기압 측정','공기 수분량 측정','기온 측정'],
+       pairs:{0:3,1:2,2:1,3:0}},
+    ],
+  },
+  g5u7:{
+    quiz:[
+      {q:'🌡️ 열이 직접 접촉으로 전달되는 방식은?',c:['대류','복사','전도','증발'],a:2},
+      {q:'☀️ 태양 열이 지구에 전달되는 방식은?',c:['전도','대류','복사','증발'],a:2},
+      {q:'🫖 뜨거운 물에서 열이 위로 올라가는 방식은?',c:['전도','복사','흡수','대류'],a:3},
+      {q:'🏠 단열재는 무엇을 막는 역할을 하나요?',c:['빛','소리','열의 이동','전기'],a:2},
+    ],
+    ox:[
+      {s:'전도는 물질의 직접 접촉으로 열이 전달되는 방식이다.',a:true},
+      {s:'복사는 매질 없이 열이 전달된다.',a:true},
+      {s:'금속은 열전도율이 낮다.',a:false},
+      {s:'대류는 유체(물·공기)에서 일어나는 열 전달 방식이다.',a:true},
+    ],
+    blank:[
+      {q:'프라이팬이 뜨거워지는 것처럼 접촉을 통해 열이 전달되는 것을 [?]이라고 해요.',opts:['대류','복사','전도','증발'],a:'전도'},
+      {q:'태양에서 지구로 열이 전달되는 방식은 [?]이에요.',opts:['전도','대류','흡수','복사'],a:'복사'},
+    ],
+    match:[
+      {left:['전도','대류','복사','단열'],right:['열 이동 차단','접촉 열 전달','유체 순환 열 전달','매질 없는 열 전달'],
+       pairs:{0:1,1:2,2:3,3:0}},
+    ],
+  },
+
+  // ── 초6 (핵심만) ──
+  g6u1:{
+    quiz:[
+      {q:'🍋 레몬주스는 어떤 성질인가요?',c:['염기성','중성','산성','알 수 없다'],a:2},
+      {q:'🧼 비누는 어떤 성질인가요?',c:['산성','중성','염기성','산성+염기성'],a:2},
+      {q:'💧 pH7은 무엇을 의미하나요?',c:['강산성','약산성','중성','강염기성'],a:2},
+      {q:'🌈 지시약이 색을 바꾸는 이유는?',c:['온도 때문에','산성/염기성에 반응','빛 때문에','압력 때문에'],a:1},
+    ],
+    ox:[
+      {s:'산성 물질은 pH가 7보다 낮다.',a:true},
+      {s:'염기성 물질은 pH가 7보다 낮다.',a:false},
+      {s:'식초는 산성이다.',a:true},
+      {s:'산과 염기가 만나면 중화반응이 일어난다.',a:true},
+    ],
+    blank:[
+      {q:'pH7보다 낮으면 [?]성이에요.',opts:['염기','중','산','강'],a:'산'},
+      {q:'산과 염기가 만나 서로의 성질을 잃는 반응을 [?]이라고 해요.',opts:['분해','산화','중화','증발'],a:'중화'},
+    ],
+    match:[
+      {left:['산성','염기성','중성','중화'],right:['산+염기 반응','pH7','비누·베이킹소다','식초·레몬'],
+       pairs:{0:3,1:2,2:1,3:0}},
+    ],
+  },
+  g6u2:{
+    quiz:[
+      {q:'🏎️ 속력을 구하는 공식은?',c:['거리×시간','거리÷시간','시간÷거리','거리+시간'],a:1},
+      {q:'⏱️ 10m를 2초에 달렸다면 속력은?',c:['20m/s','5m/s','12m/s','8m/s'],a:1},
+      {q:'🚗 속력이 빠를수록 같은 거리를?',c:['더 오래 걸린다','시간이 같다','더 짧은 시간에 간다','멈춘다'],a:2},
+      {q:'🎯 등속운동이란?',c:['속력이 점점 빨라지는 운동','속력이 일정한 운동','멈춰있는 것','속력이 느려지는 운동'],a:1},
+    ],
+    ox:[
+      {s:'속력=거리÷시간이다.',a:true},
+      {s:'단위 시간에 이동한 거리가 속력이다.',a:true},
+      {s:'속력이 빠를수록 같은 거리를 이동하는 데 더 오랜 시간이 걸린다.',a:false},
+      {s:'자동차가 직선도로를 일정한 속도로 달리는 것은 등속운동이다.',a:true},
+    ],
+    blank:[
+      {q:'속력 = [?] ÷ 시간이에요.',opts:['무게','높이','거리','넓이'],a:'거리'},
+      {q:'속력의 단위는 [?]이에요.',opts:['kg','℃','m/s','N'],a:'m/s'},
+    ],
+    match:[
+      {left:['속력','거리','시간','등속운동'],right:['속력이 일정한 운동','이동한 길이','걸린 시간','거리÷시간'],
+       pairs:{0:3,1:0,2:1,3:2}},
+    ],
+  },
+  g6u3:{
+    quiz:[
+      {q:'☀️ 식물이 빛에너지로 포도당을 만드는 과정은?',c:['호흡','증산','광합성','분해'],a:2},
+      {q:'🌿 잎에서 수분이 증발하는 현상은?',c:['광합성','증산','호흡','흡수'],a:1},
+      {q:'🌺 꽃가루가 암술에 붙는 현상은?',c:['수분(꽃가루받이)','광합성','증산','호흡'],a:0},
+      {q:'🌱 씨앗이 싹트는 데 필요한 조건은?',c:['빛만 있으면 된다','물·온도·공기','흙만 있으면 된다','비료만 있으면 된다'],a:1},
+    ],
+    ox:[
+      {s:'광합성은 이산화탄소와 물로 포도당을 만든다.',a:true},
+      {s:'증산은 뿌리에서 일어난다.',a:false},
+      {s:'꽃의 수술에서 꽃가루가 만들어진다.',a:true},
+      {s:'씨앗이 싹트려면 물·온도·공기가 필요하다.',a:true},
+    ],
+    blank:[
+      {q:'식물이 햇빛으로 포도당을 만드는 과정을 [?]이라고 해요.',opts:['호흡','증산','광합성','분해'],a:'광합성'},
+      {q:'잎의 기공으로 수분이 증발하는 현상을 [?]이라고 해요.',opts:['광합성','흡수','호흡','증산'],a:'증산'},
+    ],
+    match:[
+      {left:['뿌리','줄기','잎','꽃'],right:['수분·번식','광합성·증산','물·양분 이동','물 흡수'],
+       pairs:{0:3,1:2,2:1,3:0}},
+    ],
+  },
+  g6u4:{
+    quiz:[
+      {q:'🌍 지구가 하루에 한 바퀴 도는 운동은?',c:['공전','자전','혁명','역행'],a:1},
+      {q:'📅 지구가 태양 주위를 한 바퀴 도는 데 걸리는 시간은?',c:['하루','한 달','1년','10년'],a:2},
+      {q:'🌅 낮과 밤이 생기는 이유는?',c:['공전 때문에','자전 때문에','달 때문에','구름 때문에'],a:1},
+      {q:'⭐ 별자리가 계절마다 달라 보이는 이유는?',c:['자전','공전','달의 이동','구름'],a:1},
+    ],
+    ox:[
+      {s:'지구의 자전으로 낮과 밤이 생긴다.',a:true},
+      {s:'지구는 1년에 한 번 태양 주위를 공전한다.',a:true},
+      {s:'계절의 변화는 자전 때문에 생긴다.',a:false},
+      {s:'지구는 서쪽에서 동쪽으로 자전한다.',a:true},
+    ],
+    order:[
+      {title:'🌍 지구의 운동 종류를 알아봐요! 자전 주기 순서',
+       items:['1년(공전)','24시간(자전)','1달(달의 공전)','1일(자전)'],
+       correct:[1,3,2,0]},
+    ],
+    blank:[
+      {q:'지구가 하루에 한 바퀴 스스로 도는 운동을 [?]이라고 해요.',opts:['공전','혁명','자전','역행'],a:'자전'},
+      {q:'지구가 태양 주위를 한 바퀴 도는 것을 [?]이라고 해요.',opts:['자전','역행','진동','공전'],a:'공전'},
+    ],
+    match:[
+      {left:['자전','공전','낮과 밤','계절 변화'],right:['지구 기울기+공전','지구가 태양 주위를 돎','지구의 자전 때문','지구 스스로 도는 것'],
+       pairs:{0:3,1:1,2:2,3:0}},
+    ],
+  },
+  g6u5:{
+    quiz:[
+      {q:'❄️ 우리나라에 겨울이 있는 이유는?',c:['지구가 태양에서 멀어져서','지구 자전축이 기울어진 채 공전하기 때문','달 때문에','구름 때문에'],a:1},
+      {q:'☀️ 여름에 낮이 긴 이유는?',c:['태양이 커서','지구 기울기로 태양 고도가 높고 일조 시간이 길어서','구름이 없어서','달이 멀어서'],a:1},
+      {q:'🌍 북반구가 여름일 때 남반구는?',c:['봄','여름','겨울','가을'],a:2},
+    ],
+    ox:[
+      {s:'지구 자전축의 기울기가 계절 변화를 만든다.',a:true},
+      {s:'여름에는 태양이 지구에 가까워진다.',a:false},
+      {s:'북반구가 여름일 때 남반구는 겨울이다.',a:true},
+      {s:'낮의 길이는 계절에 따라 달라진다.',a:true},
+    ],
+    blank:[
+      {q:'계절이 바뀌는 이유는 지구 자전축이 [?]인 채로 공전하기 때문이에요.',opts:['수직','기울어진','수평','반대인'],a:'기울어진'},
+    ],
+    match:[
+      {left:['여름','겨울','봄·가을','낮의 길이'],right:['계절에 따라 다름','태양 고도 낮고 낮 짧음','태양 고도 높고 낮 길음','중간 온도'],
+       pairs:{0:2,1:1,2:3,3:0}},
+    ],
+  },
+  g6u6:{
+    quiz:[
+      {q:'🧊 얼음이 녹는 것은 어떤 변화인가요?',c:['화학 변화','물리 변화','생물 변화','전기 변화'],a:1},
+      {q:'🔥 종이가 타는 것은?',c:['물리 변화','화학 변화','전기 변화','자기 변화'],a:1},
+      {q:'⚗️ 화학 변화의 특징은?',c:['원래 물질로 되돌릴 수 있다','새로운 물질이 생긴다','모양만 변한다','색만 변한다'],a:1},
+      {q:'🦀 철이 녹스는 것은?',c:['물리 변화','화학 변화','상태 변화','형태 변화'],a:1},
+    ],
+    ox:[
+      {s:'물리 변화는 물질의 성질이 변하지 않는다.',a:true},
+      {s:'화학 변화는 새로운 물질이 생긴다.',a:true},
+      {s:'종이를 찢는 것은 화학 변화이다.',a:false},
+      {s:'철이 녹스는 것은 화학 변화이다.',a:true},
+    ],
+    blank:[
+      {q:'모양만 바뀌고 물질의 성질은 그대로인 변화를 [?]이라고 해요.',opts:['화학','생물','물리','전기'],a:'물리'},
+      {q:'새로운 물질이 생기는 변화를 [?]이라고 해요.',opts:['물리','상태','전기','화학'],a:'화학'},
+    ],
+    match:[
+      {left:['물리 변화','화학 변화','산화','연소'],right:['물질 타는 현상','모양·상태만 변함','철이 녹스는 것','새 물질 생성'],
+       pairs:{0:1,1:3,2:2,3:0}},
+    ],
+  },
+  g6u7:{
+    quiz:[
+      {q:'⚡ 전기 회로에서 전류가 흐르려면?',c:['회로가 끊어져야 한다','회로가 연결되어야 한다','물이 있어야 한다','빛이 있어야 한다'],a:1},
+      {q:'💡 직렬 연결에서 전구 1개가 끊어지면?',c:['나머지는 계속 켜진다','모두 꺼진다','더 밝아진다','아무 변화 없다'],a:1},
+      {q:'🔋 병렬 연결의 장점은?',c:['모두 꺼진다','전구 1개 꺼져도 나머지는 켜짐','전기를 많이 써서 좋다','어둡다'],a:1},
+      {q:'🏠 가정에서 전기 기구는 어떻게 연결되나요?',c:['직렬','병렬','무작위','연결 안 됨'],a:1},
+    ],
+    ox:[
+      {s:'직렬 연결에서는 전구 하나가 꺼지면 전체가 꺼진다.',a:true},
+      {s:'병렬 연결에서는 각 전구에 같은 전압이 걸린다.',a:true},
+      {s:'전류는 (+)극에서 (-)극으로 흐른다.',a:true},
+      {s:'가정의 전기 기구는 직렬로 연결되어 있다.',a:false},
+    ],
+    blank:[
+      {q:'전구가 한 줄로 연결된 방식을 [?] 연결이라고 해요.',opts:['병렬','혼합','직렬','분산'],a:'직렬'},
+      {q:'전구가 여러 줄로 연결된 방식을 [?] 연결이라고 해요.',opts:['직렬','혼합','분산','병렬'],a:'병렬'},
+    ],
+    match:[
+      {left:['직렬','병렬','전압','전류'],right:['전하의 흐름','여러 줄 연결','한 줄 연결','전기적 압력'],
+       pairs:{0:2,1:0,2:3,3:1}},
+    ],
+  },
+};
+
+// ════════════════════════════════════
+//  전역 상태
+// ════════════════════════════════════
+let totalStars = 0;
+let currentUnit = null;
+let currentGame = null;
+let quizIdx = {}, oxIdx = {}, blankIdx = {}, orderIdx = {};
+
+// ════════════════════════════════════
+//  유틸
+// ════════════════════════════════════
+function addStar(x,y,n=1){
+  totalStars += n;
+  document.getElementById('starCount').textContent = totalStars;
   const el = document.createElement('div');
   el.className = 'star-pop';
-  el.textContent = '⭐';
-  el.style.left = (x - 16) + 'px';
-  el.style.top  = (y - 16) + 'px';
+  el.textContent = n>1 ? `+${n}⭐` : '⭐';
+  el.style.cssText = `left:${x-20}px;top:${y-20}px;font-size:${n>1?'1.4':'1.8'}rem;`;
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1000);
+  setTimeout(()=>el.remove(),900);
+}
+function showToast(msg,duration=2000){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),duration);
+}
+function shuffle(arr){ return [...arr].sort(()=>Math.random()-.5); }
+
+// ════════════════════════════════════
+//  학년 탭
+// ════════════════════════════════════
+function switchGrade(grade, btn){
+  document.querySelectorAll('.grade-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.gtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sec-'+grade).classList.add('active');
+  btn.classList.add('active');
+  currentUnit = null;
 }
 
-// ─── 탭 전환 ───
-function switchTab(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-' + name).classList.add('active');
-  document.querySelector('.tab-btn.' + name).classList.add('active');
-}
-
-/* ══════════════════════════
-        물리학
-══════════════════════════ */
-
-// 중력 낙하
-let appleAnim = null;
-function dropApple() {
-  const c = document.getElementById('gravCanvas');
-  const ctx = c.getContext('2d');
-  const mass = +document.getElementById('massSlider').value;
-  document.getElementById('massVal').textContent = mass;
-
-  if (appleAnim) cancelAnimationFrame(appleAnim);
-
-  // 두 공: 큰 것 / 작은 것
-  const balls = [
-    { x: 80,  r: mass,    y: 20, vy: 0, color: '#FF6B35', label: '🍎' },
-    { x: 240, r: mass*0.5, y: 20, vy: 0, color: '#FFD700', label: '🟡' }
-  ];
-
-  function step() {
-    ctx.clearRect(0,0,c.width,c.height);
-    // 배경
-    ctx.fillStyle = '#0a1520';
-    ctx.fillRect(0,0,c.width,c.height);
-    // 땅
-    ctx.fillStyle = '#3a5a40';
-    ctx.fillRect(0, c.height-16, c.width, 16);
-
-    let done = 0;
-    balls.forEach(b => {
-      if (b.y + b.r < c.height - 16) {
-        b.vy += 0.4; // 중력 가속도(픽셀 단위)
-        b.y += b.vy;
-      } else {
-        b.y = c.height - 16 - b.r;
-        done++;
-      }
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
-      ctx.fillStyle = b.color;
-      ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px serif';
-      ctx.fillText(b.label, b.x - 8, b.y + 5);
-    });
-
-    if (done === balls.length) {
-      ctx.fillStyle = '#FFD700';
-      ctx.font = 'bold 13px Nanum Gothic';
-      ctx.fillText('둘 다 동시에! 중력은 같아요 ✨', 30, c.height - 26);
-    } else {
-      appleAnim = requestAnimationFrame(step);
-    }
-  }
-  step();
-}
-
-// 슬라이더 실시간 업데이트
-document.getElementById('massSlider').oninput = function() {
-  document.getElementById('massVal').textContent = this.value;
-};
-
-// 초기 중력 canvas
-(function() {
-  const c = document.getElementById('gravCanvas');
-  const ctx = c.getContext('2d');
-  ctx.fillStyle = '#0a1520';
-  ctx.fillRect(0,0,c.width,c.height);
-  ctx.fillStyle = '#3a5a40';
-  ctx.fillRect(0,c.height-16,c.width,16);
-  ctx.fillStyle = '#a0c4e8';
-  ctx.font = '13px Nanum Gothic';
-  ctx.fillText('버튼을 눌러 실험해봐요! 🍎', 70, 90);
-})();
-
-// 빛 반사/굴절 애니메이션
-let lightAnimId = null;
-function animateLight() {
-  const c = document.getElementById('lightCanvas');
-  const ctx = c.getContext('2d');
-  if (lightAnimId) cancelAnimationFrame(lightAnimId);
-
-  let progress = 0;
-  function draw() {
-    ctx.clearRect(0,0,c.width,c.height);
-    ctx.fillStyle = '#050d14';
-    ctx.fillRect(0,0,c.width,c.height);
-
-    // 거울
-    ctx.strokeStyle = '#90caf9';
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(200, 0); ctx.lineTo(200, c.height);
-    ctx.stroke();
-
-    // 물/유리 영역
-    ctx.fillStyle = 'rgba(40,120,220,0.18)';
-    ctx.fillRect(200, 0, c.width-200, c.height);
-    ctx.fillStyle = '#90caf9';
-    ctx.font = '11px Nanum Gothic';
-    ctx.fillText('거울', 170, 14);
-    ctx.fillText('물속', 220, 14);
-
-    const p = Math.min(progress, 1);
-
-    // 입사광선 (좌→거울)
-    const ix = 0, iy = 80;
-    const mx = 200, my = 80;
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    ctx.moveTo(ix, iy);
-    ctx.lineTo(ix + (mx - ix) * p, iy + (my - iy) * p);
-    ctx.stroke();
-
-    if (p >= 1) {
-      // 반사광선 (위로 튕김)
-      const r = Math.min((progress - 1), 1);
-      ctx.strokeStyle = '#FF6B35';
-      ctx.beginPath();
-      ctx.moveTo(200, 80);
-      ctx.lineTo(200 - 80*r, 80 - 60*r);
-      ctx.stroke();
-      ctx.fillStyle = '#FF6B35'; ctx.font='11px Nanum Gothic';
-      ctx.fillText('반사', 110, 30);
-
-      // 굴절광선 (물속으로 꺾임)
-      ctx.strokeStyle = '#2ECC71';
-      ctx.beginPath();
-      ctx.moveTo(200, 80);
-      ctx.lineTo(200 + 80*r, 80 + 40*r);
-      ctx.stroke();
-      ctx.fillStyle = '#2ECC71';
-      ctx.fillText('굴절', 230, 115);
-    }
-
-    progress += 0.025;
-    if (progress < 2.1) lightAnimId = requestAnimationFrame(draw);
-  }
-  draw();
-}
-animateLight();
-
-/* ══════════════════════════
-        화학
-══════════════════════════ */
-
-// 원소 데이터
-const elements = [
-  { sym:'H',  name:'수소',   num:1,  color:'#42a5f5', desc:'우주에서 가장 가벼운 원소! 태양도 수소로 불타요 ☀️'},
-  { sym:'C',  name:'탄소',   num:6,  color:'#78909c', desc:'연필 심(흑연), 다이아몬드, 생물의 몸 — 모두 탄소예요 💎'},
-  { sym:'O',  name:'산소',   num:8,  color:'#ef5350', desc:'우리가 숨쉬는 공기의 21%가 산소예요 🌬️'},
-  { sym:'N',  name:'질소',   num:7,  color:'#26c6da', desc:'공기의 78%! 냉각제로도 쓰여요 🧊'},
-  { sym:'Na', name:'나트륨', num:11, color:'#ffa726', desc:'소금(NaCl)의 재료! 물에 넣으면 격렬하게 반응해요 💥'},
-  { sym:'Fe', name:'철',    num:26, color:'#8d6e63', desc:'철교, 자동차, 냄비 — 우리 주변 어디에나 있어요 🔧'},
-  { sym:'Au', name:'금',    num:79, color:'#fdd835', desc:'반짝반짝! 녹슬지 않는 귀한 금속이에요 ✨'},
-  { sym:'Ca', name:'칼슘',  num:20, color:'#ce93d8', desc:'뼈와 치아를 튼튼하게 만들어요 🦷'},
-];
-
-(function buildElGrid() {
-  const grid = document.getElementById('elGrid');
-  elements.forEach(el => {
-    const btn = document.createElement('button');
-    btn.className = 'el-btn';
-    btn.style.background = el.color;
-    btn.style.color = '#fff';
-    btn.innerHTML = `<div style="font-size:.7rem">${el.num}</div><div style="font-weight:800">${el.sym}</div>`;
-    btn.title = el.name;
-    btn.onclick = (e) => {
-      document.getElementById('el-info').innerHTML =
-        `<b>${el.sym} — ${el.name}</b><br>${el.desc}`;
-      addStar(e.clientX, e.clientY);
-    };
-    grid.appendChild(btn);
+// ════════════════════════════════════
+//  단원 카드 빌드
+// ════════════════════════════════════
+function buildUnits(grade){
+  const units = UNITS[grade];
+  const grid = document.getElementById(grade+'-units');
+  grid.innerHTML = '';
+  units.forEach(u=>{
+    const card = document.createElement('div');
+    card.className = 'unit-card';
+    card.style.setProperty('--uc', u.color);
+    card.innerHTML = `
+      <span class="unit-emoji">${u.emoji}</span>
+      <div class="badge">${u.badge}</div>
+      <h4>${u.title}</h4>
+      <p>${u.desc}</p>`;
+    card.onclick = ()=>openUnit(grade, u, card);
+    grid.appendChild(card);
   });
-})();
-
-// pH 지시약 바
-function drawPH() {
-  const ph = +document.getElementById('phSlider').value;
-  document.getElementById('phVal').textContent = ph;
-  const c = document.getElementById('phCanvas');
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0,0,c.width,c.height);
-
-  // 그라데이션 바
-  const grd = ctx.createLinearGradient(10,0,c.width-10,0);
-  grd.addColorStop(0,    '#e53935'); // pH1 빨강(강산)
-  grd.addColorStop(0.3,  '#f9a825'); // pH5
-  grd.addColorStop(0.5,  '#43a047'); // pH7 중성
-  grd.addColorStop(0.7,  '#1e88e5'); // pH9
-  grd.addColorStop(1,    '#6a1b9a'); // pH14 보라(강염기)
-
-  ctx.fillStyle = grd;
-  ctx.beginPath();
-  ctx.roundRect(10, 40, c.width-20, 34, 17);
-  ctx.fill();
-
-  // 눈금
-  for (let i=1;i<=14;i++) {
-    const x = 10 + (i-1)/(13)*(c.width-20);
-    ctx.fillStyle = 'rgba(255,255,255,.5)';
-    ctx.fillRect(x, 40, 1, 34);
-    ctx.fillStyle = '#ddd';
-    ctx.font = '9px Nanum Gothic';
-    ctx.fillText(i, x-3, 36);
-  }
-
-  // 현재 포인터
-  const px = 10 + (ph-1)/13*(c.width-20);
-  ctx.fillStyle = '#fff';
-  ctx.beginPath();
-  ctx.arc(px, 57, 10, 0, Math.PI*2);
-  ctx.fill();
-  ctx.fillStyle = '#222';
-  ctx.font = 'bold 9px Nanum Gothic';
-  ctx.fillText(ph, px-4, 61);
-
-  // 라벨
-  let label = '', col = '';
-  if (ph < 6)       { label = '산성 🍋 (예: 식초, 레몬)';  col = '#ef9a9a'; }
-  else if (ph === 7) { label = '중성 💧 (예: 순수한 물)';    col = '#a5d6a7'; }
-  else               { label = '염기성 🧼 (예: 비누, 소다)'; col = '#b39ddb'; }
-
-  ctx.fillStyle = col;
-  ctx.font = 'bold 13px Nanum Gothic';
-  ctx.fillText(label, 14, 100);
-}
-drawPH();
-
-/* ══════════════════════════
-        생물학
-══════════════════════════ */
-
-// 광합성
-let photoAnimId = null;
-let sunOn = false;
-let particles = [];
-
-function startPhotosynthesis() {
-  sunOn = true;
-  if (!photoAnimId) photoLoop();
-}
-function stopPhotosynthesis() {
-  sunOn = false;
-  cancelAnimationFrame(photoAnimId);
-  photoAnimId = null;
-  drawPlantStatic();
 }
 
-function drawPlantStatic() {
-  const c = document.getElementById('photoCanvas');
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle = '#0a1a0a';
-  ctx.fillRect(0,0,c.width,c.height);
-  drawPlant(ctx, c.width, c.height);
+function openUnit(grade, unit, cardEl){
+  document.querySelectorAll('.unit-card').forEach(c=>c.classList.remove('active-unit'));
+  cardEl.classList.add('active-unit');
+
+  const panel = document.getElementById(grade+'-panel');
+  panel.style.setProperty('--uc', unit.color);
+  panel.classList.add('show');
+  currentUnit = unit.id;
+
+  // 게임 탭 구성
+  const gameLabels = {quiz:'📝 퀴즈',ox:'⭕❌ OX',blank:'✏️ 빈칸',match:'🔗 매칭',order:'📋 순서'};
+  const availGames = unit.games.filter(g=> GAME_DATA[unit.id] && GAME_DATA[unit.id][g]);
+
+  panel.innerHTML = `
+    <div class="panel-title" style="color:var(--uc)">${unit.emoji} ${unit.title}</div>
+    <div class="game-tabs">
+      ${availGames.map((g,i)=>`<button class="game-tab ${i===0?'active':''}" onclick="switchGame('${unit.id}','${grade}','${g}',this)">${gameLabels[g]}</button>`).join('')}
+    </div>
+    <div id="game-content-${unit.id}"></div>`;
+
+  if(availGames.length>0) renderGame(unit.id, grade, availGames[0]);
+
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
-function drawPlant(ctx, w, h) {
-  // 땅
-  ctx.fillStyle = '#3a2a1a';
-  ctx.fillRect(0, h-30, w, 30);
-  // 줄기
-  ctx.strokeStyle = '#4caf50';
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  ctx.moveTo(w/2, h-30);
-  ctx.bezierCurveTo(w/2, h-80, w/2-15, h-110, w/2-10, h-140);
-  ctx.stroke();
-  // 잎
-  ctx.fillStyle = '#388e3c';
-  ctx.beginPath();
-  ctx.ellipse(w/2-30, h-110, 30, 14, -0.5, 0, Math.PI*2);
-  ctx.fill();
-  ctx.beginPath();
-  ctx.ellipse(w/2+20, h-130, 28, 12, 0.4, 0, Math.PI*2);
-  ctx.fill();
+function switchGame(unitId, grade, game, btn){
+  document.querySelectorAll('.game-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGame(unitId, grade, game);
 }
 
-function photoLoop() {
-  const c = document.getElementById('photoCanvas');
-  const ctx = c.getContext('2d');
-  const w = c.width, h = c.height;
+// ════════════════════════════════════
+//  게임 렌더
+// ════════════════════════════════════
+function renderGame(unitId, grade, game){
+  const container = document.getElementById('game-content-'+unitId);
+  const data = GAME_DATA[unitId];
+  if(!data || !data[game]){ container.innerHTML='<p style="color:var(--muted);padding:12px">준비 중이에요!</p>'; return; }
 
-  // 파티클 생성
-  if (sunOn && Math.random() < 0.3) {
-    // CO2 들어옴
-    particles.push({ type:'co2', x: Math.random()*w, y: h*0.1 + Math.random()*20,
-      vx:(Math.random()-.5)*1, vy: 0.8, alpha:1, color:'#90caf9' });
-  }
-
-  ctx.clearRect(0,0,w,h);
-  ctx.fillStyle = '#0a1a0a';
-  ctx.fillRect(0,0,w,h);
-
-  // 태양
-  if (sunOn) {
-    ctx.fillStyle = '#FFD700';
-    ctx.shadowColor = '#FFD700';
-    ctx.shadowBlur = 20;
-    ctx.beginPath();
-    ctx.arc(40, 36, 22, 0, Math.PI*2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = '#FFD700';
-    ctx.font = '11px Nanum Gothic';
-    ctx.fillText('태양 ☀️', 20, 72);
-  }
-
-  drawPlant(ctx, w, h);
-
-  // 라벨
-  ctx.font = '11px Nanum Gothic';
-  ctx.fillStyle = '#90caf9';
-  ctx.fillText('💧 물', 4, h-34);
-  ctx.fillStyle = '#ce93d8';
-  ctx.fillText('CO₂ ↓', w-52, 24);
-  ctx.fillStyle = '#a5d6a7';
-  ctx.fillText('O₂ ↑', w-44, h-50);
-
-  // 파티클
-  particles = particles.filter(p => p.alpha > 0.05);
-  particles.forEach(p => {
-    ctx.globalAlpha = p.alpha;
-    ctx.fillStyle = p.color;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
-    ctx.fill();
-    p.x += p.vx;
-    p.y += p.vy;
-    if (p.y > h*0.6) {
-      // 변환 — O2로 바꿔서 위로
-      p.type = 'o2'; p.color = '#a5d6a7'; p.vy = -0.8; p.vx = (Math.random()-.5)*1.2;
-    }
-    if (p.y < 0 || p.y > h) p.alpha = 0;
-    p.alpha -= 0.008;
-  });
-  ctx.globalAlpha = 1;
-
-  photoAnimId = requestAnimationFrame(photoLoop);
-}
-drawPlantStatic();
-
-// 세포 캔버스
-const cellParts = [];
-(function drawCell() {
-  const c = document.getElementById('cell-canvas');
-  const ctx = c.getContext('2d');
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.fillStyle = '#071510';
-  ctx.fillRect(0,0,c.width,c.height);
-
-  const cx = c.width/2, cy = c.height/2;
-
-  // 세포벽
-  ctx.strokeStyle = '#66bb6a'; ctx.lineWidth = 6;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, 140, 88, 0, 0, Math.PI*2); ctx.stroke();
-  cellParts.push({ label:'세포벽', desc:'세포를 보호하는 두꺼운 벽이에요 🏰', x:cx+125, y:cy, r:18 });
-
-  // 세포막
-  ctx.strokeStyle = '#26a69a'; ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, 132, 80, 0, 0, Math.PI*2); ctx.stroke();
-  cellParts.push({ label:'세포막', desc:'무엇이 들어오고 나갈지 결정해요 🚦', x:cx+118, y:cy+12, r:14 });
-
-  // 핵
-  ctx.fillStyle = 'rgba(121,85,72,0.7)';
-  ctx.beginPath();
-  ctx.ellipse(cx-10, cy, 36, 30, 0, 0, Math.PI*2); ctx.fill();
-  ctx.strokeStyle = '#a1887f'; ctx.lineWidth=2; ctx.stroke();
-  ctx.fillStyle='#d7ccc8'; ctx.font='bold 11px Jua,sans-serif';
-  ctx.fillText('핵', cx-18, cy+5);
-  cellParts.push({ label:'핵', desc:'세포의 사령부! DNA가 들어있어요 🧬', x:cx-10, y:cy, r:36 });
-
-  // 엽록체
-  [[cx+50, cy-20],[cx+65, cy+10],[cx+30, cy+30]].forEach(([ex,ey],i) => {
-    ctx.fillStyle = 'rgba(56,142,60,0.8)';
-    ctx.beginPath();
-    ctx.ellipse(ex, ey, 18, 10, 0.3, 0, Math.PI*2); ctx.fill();
-    if (i===0) cellParts.push({ label:'엽록체', desc:'햇빛으로 음식(포도당)을 만드는 공장이에요 🌱', x:ex, y:ey, r:20 });
-  });
-
-  // 미토콘드리아
-  ctx.fillStyle = 'rgba(239,108,0,0.75)';
-  ctx.beginPath();
-  ctx.ellipse(cx-60, cy+20, 22, 12, 0.5, 0, Math.PI*2); ctx.fill();
-  ctx.fillStyle='#ffe0b2'; ctx.font='9px Nanum Gothic';
-  ctx.fillText('⚡', cx-68, cy+24);
-  cellParts.push({ label:'미토콘드리아', desc:'에너지를 만드는 발전소예요 ⚡', x:cx-60, y:cy+20, r:24 });
-
-  // 액포
-  ctx.fillStyle = 'rgba(100,181,246,0.4)';
-  ctx.beginPath();
-  ctx.ellipse(cx+20, cy-30, 24, 18, 0, 0, Math.PI*2); ctx.fill();
-  ctx.strokeStyle='#64b5f6'; ctx.lineWidth=1.5; ctx.stroke();
-  cellParts.push({ label:'액포', desc:'물이나 영양분을 저장하는 창고예요 💧', x:cx+20, y:cy-30, r:26 });
-
-  // 리보솜 점들
-  for(let i=0;i<6;i++){
-    const rx = cx-90+i*18 + (Math.random()*6|0);
-    const ry = cy-10 + (Math.random()*16|0)-8;
-    ctx.fillStyle='#f48fb1';
-    ctx.beginPath(); ctx.arc(rx,ry,4,0,Math.PI*2); ctx.fill();
-  }
-  cellParts.push({ label:'리보솜', desc:'단백질을 만드는 조그만 공장이에요 🔩', x:cx-72, y:cy-4, r:12 });
-
-  // 안내
-  ctx.fillStyle='rgba(160,196,232,0.6)';
-  ctx.font='11px Nanum Gothic';
-  ctx.fillText('👆 세포 부분을 클릭해봐요!', cx-70, c.height-8);
-})();
-
-function handleCellClick(e) {
-  const c = document.getElementById('cell-canvas');
-  const rect = c.getBoundingClientRect();
-  const scaleX = c.width / rect.width;
-  const scaleY = c.height / rect.height;
-  const mx = (e.clientX - rect.left) * scaleX;
-  const my = (e.clientY - rect.top)  * scaleY;
-
-  let hit = null;
-  cellParts.forEach(p => {
-    const d = Math.hypot(mx-p.x, my-p.y);
-    if (d < p.r + 14) hit = p;
-  });
-  if (hit) {
-    document.getElementById('cell-info').innerHTML =
-      `<b>📌 ${hit.label}</b> — ${hit.desc}`;
-    addStar(e.clientX, e.clientY);
-  }
+  currentGame = game;
+  if(game==='quiz')   renderQuiz(unitId, data.quiz, container);
+  else if(game==='ox') renderOX(unitId, data.ox, container);
+  else if(game==='blank') renderBlank(unitId, data.blank, container);
+  else if(game==='match') renderMatch(unitId, data.match[0], container);
+  else if(game==='order') renderOrder(unitId, data.order, container);
 }
 
-/* ══════════════════════════
-          퀴즈
-══════════════════════════ */
-const quizData = {
-  physics: [
-    { q:'🍎 사과가 나무에서 떨어지는 이유는 무엇일까요?',
-      choices:['바람이 불어서','지구의 중력 때문에','사과가 무서워서','마법 때문에'],
-      ans: 1 },
-    { q:'💡 빛이 거울에 닿으면 어떻게 될까요?',
-      choices:['사라진다','흡수된다','반사된다','폭발한다'],
-      ans: 2 },
-    { q:'🚀 우주에서 중력이 없으면 물체는?',
-      choices:['더 빨리 떨어진다','떠다닌다','사라진다','거꾸로 떨어진다'],
-      ans: 1 },
-  ],
-  chemistry: [
-    { q:'🧪 물의 화학식은 무엇일까요?',
-      choices:['CO₂','O₂','H₂O','NaCl'],
-      ans: 2 },
-    { q:'🍋 레몬주스는 산성일까요, 염기성일까요?',
-      choices:['염기성','중성','산성','알 수 없어요'],
-      ans: 2 },
-    { q:'⚗️ 소금(NaCl)을 이루는 두 원소는?',
-      choices:['수소+산소','나트륨+염소','탄소+질소','철+금'],
-      ans: 1 },
-  ],
-  biology: [
-    { q:'☀️ 식물이 햇빛으로 음식을 만드는 과정을 뭐라고 할까요?',
-      choices:['소화','광합성','호흡','발효'],
-      ans: 1 },
-    { q:'🔬 세포에서 에너지를 만드는 부분은?',
-      choices:['핵','액포','미토콘드리아','엽록체'],
-      ans: 2 },
-    { q:'🌱 식물 세포에만 있는 것은?',
-      choices:['핵','미토콘드리아','엽록체','리보솜'],
-      ans: 2 },
-  ],
-};
-
-function buildQuiz(subj, containerId) {
-  const qs = quizData[subj];
-  let idx = 0;
-  const box = document.getElementById(containerId);
-
-  function show() {
-    const q = qs[idx % qs.length];
-    box.innerHTML = `
-      <div class="quiz-q">Q${(idx % qs.length)+1}. ${q.q}</div>
-      <div class="choices">
-        ${q.choices.map((c,i)=>`<button class="choice-btn" onclick="pick(this,${i},${q.ans},'${subj}','${containerId}')">${c}</button>`).join('')}
+// ── 퀴즈 ──
+function renderQuiz(uid, questions, container){
+  if(!quizIdx[uid]) quizIdx[uid]=0;
+  const q = questions[quizIdx[uid] % questions.length];
+  const num = quizIdx[uid] % questions.length + 1;
+  container.innerHTML = `
+    <div class="quiz-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:0.8rem;color:var(--muted)">${num}/${questions.length}</span>
+        <div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:${num/questions.length*100}%"></div></div>
       </div>
-      <div class="quiz-result" id="res-${containerId}"></div>
-      <div style="text-align:right;margin-top:8px">
-        <button class="btn btn-quiz" onclick="nextQ('${subj}','${containerId}',${idx+1})">다음 문제 ▶</button>
-      </div>`;
-  }
-  window['nextQ'] = function(s,cid,ni) {
-    if (s===subj && cid===containerId) { idx=ni; show(); }
-  };
-  show();
+      <div class="quiz-q">${q.q}</div>
+      <div class="choices">
+        ${q.c.map((ch,i)=>`<button class="choice-btn" onclick="pickQuiz(this,${i},${q.a},'${uid}')">${ch}</button>`).join('')}
+      </div>
+      <div class="quiz-result" id="qres-${uid}"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost btn-sm" onclick="quizIdx['${uid}']=(quizIdx['${uid}']-1+${questions.length})%${questions.length};renderGame('${uid}','','quiz')">◀ 이전</button>
+        <button class="btn btn-primary btn-sm" onclick="quizIdx['${uid}']=(quizIdx['${uid}']+1)%${questions.length};renderGame('${uid}','','quiz')">다음 ▶</button>
+      </div>
+    </div>`;
 }
-
-window.pick = function(btn, chosen, ans, subj, cid) {
+window.pickQuiz = function(btn,chosen,ans,uid){
   const box = btn.closest('.choices');
-  box.querySelectorAll('.choice-btn').forEach((b,i) => {
-    b.disabled = true;
-    if (i === ans) b.classList.add('correct');
-    else if (i === chosen && chosen !== ans) b.classList.add('wrong');
+  box.querySelectorAll('.choice-btn').forEach((b,i)=>{
+    b.disabled=true;
+    if(i===ans) b.classList.add('correct');
+    else if(i===chosen&&chosen!==ans) b.classList.add('wrong');
   });
-  const res = document.getElementById('res-' + cid);
-  if (chosen === ans) {
-    res.textContent = '🎉 정답! 대단해요!';
-    res.style.color = '#69f0ae';
-    addStar(btn.getBoundingClientRect().x + 40, btn.getBoundingClientRect().y);
+  const res = document.getElementById('qres-'+uid);
+  if(chosen===ans){
+    res.innerHTML='<span style="color:#6ee7b7">🎉 정답!</span>';
+    addStar(btn.getBoundingClientRect().x+40, btn.getBoundingClientRect().y);
+    showToast('🎉 정답이에요!');
   } else {
-    res.textContent = '🙁 아쉽지만 틀렸어요. 다시 도전!';
-    res.style.color = '#ef9a9a';
+    res.innerHTML=`<span style="color:#fca5a5">🙁 틀렸어요!</span>`;
   }
 };
 
-buildQuiz('physics',   'physicsQuiz');
-buildQuiz('chemistry', 'chemQuiz');
-buildQuiz('biology',   'bioQuiz');
-</script>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/jiho-lab/sw.js')
-        .then(() => console.log('✅ 지호박사 SW 등록 완료'))
-        .catch(err => console.log('SW 오류:', err));
-    });
+// ── OX ──
+function renderOX(uid, statements, container){
+  if(!oxIdx[uid]) oxIdx[uid]=0;
+  const s = statements[oxIdx[uid] % statements.length];
+  const num = oxIdx[uid] % statements.length + 1;
+  container.innerHTML = `
+    <div class="ox-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:0.8rem;color:var(--muted)">${num}/${statements.length}</span>
+        <div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:${num/statements.length*100}%"></div></div>
+      </div>
+      <div class="ox-statement">${s.s}</div>
+      <div class="ox-btns">
+        <button class="ox-btn o" onclick="pickOX(${s.a},true,'${uid}',this)">⭕</button>
+        <button class="ox-btn x" onclick="pickOX(${s.a},false,'${uid}',this)">❌</button>
+      </div>
+      <div class="ox-result" id="oxres-${uid}"></div>
+      <div class="quiz-nav" style="margin-top:12px">
+        <button class="btn btn-ghost btn-sm" onclick="oxIdx['${uid}']=(oxIdx['${uid}']-1+${statements.length})%${statements.length};renderGame('${uid}','','ox')">◀ 이전</button>
+        <button class="btn btn-primary btn-sm" onclick="oxIdx['${uid}']=(oxIdx['${uid}']+1)%${statements.length};renderGame('${uid}','','ox')">다음 ▶</button>
+      </div>
+    </div>`;
+}
+window.pickOX = function(correct, chosen, uid, btn){
+  document.querySelectorAll('.ox-btn').forEach(b=>b.disabled=true);
+  const res = document.getElementById('oxres-'+uid);
+  if(chosen===correct){
+    res.innerHTML='<span style="color:#6ee7b7">🎉 정답!</span>';
+    addStar(btn.getBoundingClientRect().x+40, btn.getBoundingClientRect().y);
+    showToast('🎉 정답이에요!');
+  } else {
+    res.innerHTML=`<span style="color:#fca5a5">🙁 틀렸어요! 정답은 ${correct?'⭕':'❌'}</span>`;
   }
+};
+
+// ── 빈칸 채우기 ──
+function renderBlank(uid, blanks, container){
+  if(!blankIdx[uid]) blankIdx[uid]=0;
+  const b = blanks[blankIdx[uid] % blanks.length];
+  const num = blankIdx[uid] % blanks.length + 1;
+  const qHtml = b.q.replace('[?]', `<span class="blank" id="blank-ans-${uid}">　　　</span>`);
+  const shuffledOpts = shuffle(b.opts);
+  container.innerHTML = `
+    <div class="blank-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:0.8rem;color:var(--muted)">${num}/${blanks.length}</span>
+        <div class="progress-bar" style="width:120px"><div class="progress-fill" style="width:${num/blanks.length*100}%"></div></div>
+      </div>
+      <div class="blank-q">${qHtml}</div>
+      <div class="blank-opts">
+        ${shuffledOpts.map(o=>`<button class="blank-opt" onclick="pickBlank(this,'${o}','${b.a}','${uid}')">${o}</button>`).join('')}
+      </div>
+      <div class="quiz-result" id="bres-${uid}"></div>
+      <div class="quiz-nav">
+        <button class="btn btn-ghost btn-sm" onclick="blankIdx['${uid}']=(blankIdx['${uid}']-1+${blanks.length})%${blanks.length};renderGame('${uid}','','blank')">◀ 이전</button>
+        <button class="btn btn-primary btn-sm" onclick="blankIdx['${uid}']=(blankIdx['${uid}']+1)%${blanks.length};renderGame('${uid}','','blank')">다음 ▶</button>
+      </div>
+    </div>`;
+}
+window.pickBlank = function(btn, chosen, ans, uid){
+  document.querySelectorAll('.blank-opt').forEach(b=>b.disabled=true);
+  const blankEl = document.getElementById('blank-ans-'+uid);
+  const res = document.getElementById('bres-'+uid);
+  blankEl.textContent = chosen;
+  if(chosen===ans){
+    btn.classList.add('correct-opt');
+    blankEl.style.color='#6ee7b7';
+    res.innerHTML='<span style="color:#6ee7b7">🎉 정답!</span>';
+    addStar(btn.getBoundingClientRect().x+40, btn.getBoundingClientRect().y);
+    showToast('🎉 정답이에요!');
+  } else {
+    btn.classList.add('wrong-opt');
+    blankEl.style.color='#fca5a5';
+    res.innerHTML=`<span style="color:#fca5a5">🙁 틀렸어요! 정답: <b style="color:#6ee7b7">${ans}</b></span>`;
+  }
+};
+
+// ── 매칭 ──
+function renderMatch(uid, matchData, container){
+  const leftItems = matchData.left;
+  const rightItems = shuffle([...matchData.right]);
+  const rightOriginal = matchData.right;
+  const pairs = matchData.pairs;
+  let selected = null;
+  let selectedSide = null;
+  let matched = new Set();
+
+  const rightMap = {};
+  rightItems.forEach((r,i)=> rightMap[r] = rightOriginal.indexOf(r));
+
+  container.innerHTML = `
+    <div style="font-size:0.82rem;color:var(--muted);margin-bottom:10px">👆 왼쪽과 오른쪽을 연결해봐요!</div>
+    <div class="match-wrap">
+      <div class="match-col" id="match-left-${uid}">
+        ${leftItems.map((l,i)=>`<div class="match-item" data-idx="${i}" data-side="left" onclick="matchClick(this,'${uid}')">${l}</div>`).join('')}
+      </div>
+      <div class="match-col" id="match-right-${uid}">
+        ${rightItems.map((r,i)=>`<div class="match-item" data-val="${r}" data-ridx="${rightMap[r]}" data-side="right" onclick="matchClick(this,'${uid}')">${r}</div>`).join('')}
+      </div>
+    </div>
+    <div class="quiz-result" id="mres-${uid}" style="margin-top:10px"></div>
+    <div class="quiz-nav">
+      <button class="btn btn-ghost btn-sm" onclick="renderGame('${uid}','','match')">🔄 다시하기</button>
+    </div>`;
+
+  window._matchState = window._matchState || {};
+  window._matchState[uid] = {selected:null,selectedSide:null,matched:new Set(),pairs,leftItems,rightMap,total:leftItems.length,score:0};
+}
+window.matchClick = function(el, uid){
+  const state = window._matchState[uid];
+  if(el.classList.contains('matched')) return;
+  const side = el.dataset.side;
+
+  if(!state.selected){
+    state.selected = el;
+    state.selectedSide = side;
+    el.classList.add('selected');
+    return;
+  }
+
+  if(state.selectedSide === side){
+    state.selected.classList.remove('selected');
+    state.selected = el;
+    el.classList.add('selected');
+    return;
+  }
+
+  // 매칭 시도
+  let leftEl, rightEl;
+  if(side==='right'){ leftEl=state.selected; rightEl=el; }
+  else { leftEl=el; rightEl=state.selected; }
+
+  const lIdx = parseInt(leftEl.dataset.idx);
+  const rIdx = parseInt(rightEl.dataset.ridx);
+  const correctRIdx = state.pairs[lIdx];
+
+  if(rIdx === correctRIdx){
+    leftEl.classList.remove('selected'); leftEl.classList.add('matched');
+    rightEl.classList.remove('selected'); rightEl.classList.add('matched');
+    state.score++;
+    addStar(rightEl.getBoundingClientRect().x+30, rightEl.getBoundingClientRect().y);
+    if(state.score >= state.total){
+      document.getElementById('mres-'+uid).innerHTML='<span style="color:#6ee7b7">🎉 모두 연결했어요!</span>';
+      showToast('🎊 완벽해요!');
+    }
+  } else {
+    leftEl.classList.add('wrong-flash'); rightEl.classList.add('wrong-flash');
+    setTimeout(()=>{
+      leftEl.classList.remove('wrong-flash','selected');
+      rightEl.classList.remove('wrong-flash','selected');
+    },600);
+  }
+  state.selected = null; state.selectedSide = null;
+};
+
+// ── 순서 맞추기 ──
+function renderOrder(uid, orders, container){
+  if(!orderIdx[uid]) orderIdx[uid]=0;
+  const od = orders[orderIdx[uid] % orders.length];
+  const shuffled = shuffle(od.items.map((item,i)=>({item,origIdx:i})));
+
+  container.innerHTML = `
+    <div style="font-family:'Jua',cursive;font-size:0.95rem;margin-bottom:10px">${od.title}</div>
+    <div class="order-wrap" id="order-list-${uid}">
+      ${shuffled.map((o,i)=>`
+        <div class="order-item" draggable="true" data-orig="${o.origIdx}" 
+             ondragstart="dragStart(event)" ondragover="dragOver(event)" ondrop="dragDrop(event,'${uid}')">
+          <span class="drag-handle">☰</span>
+          <span>${o.item}</span>
+        </div>`).join('')}
+    </div>
+    <div class="quiz-nav" style="margin-top:10px">
+      <button class="btn btn-ghost btn-sm" onclick="renderGame('${uid}','','order')">🔄 섞기</button>
+      <button class="btn btn-primary btn-sm" onclick="checkOrder('${uid}',${JSON.stringify(od.correct)})">✅ 확인!</button>
+    </div>
+    <div class="quiz-result" id="ores-${uid}" style="margin-top:8px"></div>`;
+}
+let dragSrc = null;
+window.dragStart = function(e){ dragSrc=e.target; e.dataTransfer.effectAllowed='move'; };
+window.dragOver = function(e){ e.preventDefault(); e.dataTransfer.dropEffect='move'; };
+window.dragDrop = function(e, uid){
+  e.stopPropagation();
+  if(dragSrc !== e.currentTarget){
+    const list = document.getElementById('order-list-'+uid);
+    const items = [...list.querySelectorAll('.order-item')];
+    const fromIdx = items.indexOf(dragSrc);
+    const toIdx = items.indexOf(e.currentTarget);
+    if(fromIdx<toIdx) list.insertBefore(dragSrc, e.currentTarget.nextSibling);
+    else list.insertBefore(dragSrc, e.currentTarget);
+  }
+};
+window.checkOrder = function(uid, correct){
+  const list = document.getElementById('order-list-'+uid);
+  const items = [...list.querySelectorAll('.order-item')];
+  const userOrder = items.map(el=>parseInt(el.dataset.orig));
+  const isCorrect = correct.every((c,i)=>c===userOrder[i]);
+  const res = document.getElementById('ores-'+uid);
+  if(isCorrect){
+    res.innerHTML='<span style="color:#6ee7b7">🎉 순서가 맞아요!</span>';
+    addStar(list.getBoundingClientRect().x+100, list.getBoundingClientRect().y);
+    showToast('🎊 완벽한 순서예요!');
+  } else {
+    res.innerHTML='<span style="color:#fca5a5">🙁 순서가 틀렸어요. 다시 해봐요!</span>';
+  }
+};
+
+// ════════════════════════════════════
+//  초기화
+// ════════════════════════════════════
+['g3','g4','g5','g6'].forEach(g=>buildUnits(g));
+
+// PWA Service Worker
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/jiho-lab/sw.js')
+      .then(()=>console.log('✅ SW 등록'))
+      .catch(e=>console.log('SW 오류:',e));
+  });
+}
 </script>
 </body>
 </html>
