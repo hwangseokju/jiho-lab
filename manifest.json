@@ -1,0 +1,25 @@
+{
+  "name": "지호박사 과학실험실",
+  "short_name": "지호박사",
+  "description": "물리학, 화학, 생물학을 재미있게 배우는 지호박사의 과학실험실!",
+  "start_url": "/jiho-lab/",
+  "scope": "/jiho-lab/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0D1B2A",
+  "theme_color": "#0D1B2A",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

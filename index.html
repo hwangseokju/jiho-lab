@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🔬 신기한 과학 탐험대</title>
+<title>지호박사 과학실험실</title>
+<meta name="theme-color" content="#0D1B2A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="지호박사">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Jua&family=Nanum+Gothic:wght@400;700;800&display=swap');
 
@@ -832,6 +838,15 @@ window.pick = function(btn, chosen, ans, subj, cid) {
 buildQuiz('physics',   'physicsQuiz');
 buildQuiz('chemistry', 'chemQuiz');
 buildQuiz('biology',   'bioQuiz');
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/jiho-lab/sw.js')
+        .then(() => console.log('✅ 지호박사 SW 등록 완료'))
+        .catch(err => console.log('SW 오류:', err));
+    });
+  }
 </script>
 </body>
 </html>
